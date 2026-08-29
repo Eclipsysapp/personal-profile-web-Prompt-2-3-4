@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import {
@@ -54,7 +54,7 @@ type SecurityContext = Record<
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ??
-  "http://127.0.0.1:8000";
+  "https://api.anilbhimani.com";
 
 export default function AccessRequestDemo() {
   const [step, setStep] =
@@ -560,7 +560,7 @@ export default function AccessRequestDemo() {
             href="/"
             className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:text-slate-950"
           >
-            ← Back to website
+            â† Back to website
           </Link>
         </div>
       </header>
@@ -785,7 +785,7 @@ export default function AccessRequestDemo() {
                       }}
                       className="rounded-lg px-4 py-3 text-xs font-semibold text-slate-600 transition hover:bg-slate-200 disabled:opacity-50"
                     >
-                      ← Previous step
+                      â† Previous step
                     </button>
                   )}
 
@@ -1006,7 +1006,7 @@ function MobileVerification({
       </div>
 
       <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.08em] text-emerald-700">
-        ✓ Registration saved
+        âœ“ Registration saved
       </div>
 
       <h3 className="mt-4 text-2xl font-semibold tracking-[-0.035em] text-slate-950">
@@ -1071,7 +1071,7 @@ function MobileVerification({
               );
             }}
             className={`${inputClass} text-center text-xl font-bold tracking-[0.35em] disabled:bg-slate-50 disabled:text-slate-400`}
-            placeholder="••••••"
+            placeholder="â€¢â€¢â€¢â€¢â€¢â€¢"
           />
         </Field>
       </div>
@@ -1113,7 +1113,7 @@ function AccessPurpose({
             </strong>
 
             <p className="mt-1 text-[11px] text-emerald-700">
-              {visitor?.full_name} —{" "}
+              {visitor?.full_name} â€”{" "}
               {visitor?.mobile}
             </p>
           </div>
@@ -1294,7 +1294,7 @@ function PendingState({
           value={
             visitor
               ? String(visitor.id)
-              : "—"
+              : "â€”"
           }
         />
 
@@ -1306,7 +1306,7 @@ function PendingState({
         <SummaryRow
           label="Mobile"
           value={
-            visitor?.mobile ?? "—"
+            visitor?.mobile ?? "â€”"
           }
         />
 
@@ -1368,7 +1368,7 @@ function ProgressItem({
         }`}
       >
         {complete
-          ? "✓"
+          ? "âœ“"
           : number}
       </span>
 
@@ -1454,7 +1454,7 @@ function PrimaryButton({
 
       {!loading && (
         <span className="text-base">
-          →
+          â†’
         </span>
       )}
     </button>
@@ -1471,7 +1471,7 @@ function MiniSecurityCard({
   return (
     <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
       <span className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-50 text-xs font-bold text-emerald-600">
-        ✓
+        âœ“
       </span>
 
       <div>
@@ -1813,7 +1813,7 @@ function getApiErrorMessage(
       .filter(Boolean);
 
     if (allErrors.length > 0) {
-      return allErrors.join(" • ");
+      return allErrors.join(" â€¢ ");
     }
   }
 
