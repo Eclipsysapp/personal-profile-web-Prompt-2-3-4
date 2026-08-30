@@ -1,0 +1,932 @@
+.geeky-shell{--g-primary:#2ba283;--g-primary-dark:#20876d;--g-text:#555;--g-dark:#171717;--g-border:#e2e2e2;--g-light:#f3f3f3;--g-bg:#fff;min-height:100vh;background:var(--g-bg);color:var(--g-text);font-family:Arial,Helvetica,sans-serif}.geeky-shell *{box-sizing:border-box}.geeky-shell a{text-decoration:none;color:inherit}.geeky-container{width:min(calc(100% - 48px),1540px);margin-inline:auto}.geeky-header{position:relative;z-index:50;border-bottom:1px solid #eee;background:#fff}.geeky-navbar{min-height:132px;display:flex;align-items:center;gap:48px}.geeky-logo{display:inline-flex;align-items:center;gap:12px;color:var(--g-primary);font-size:34px;font-weight:500;letter-spacing:-1.5px;white-space:nowrap}.geeky-logo-symbol{position:relative;width:67px;height:48px;display:inline-grid;place-items:center;color:#222;font-size:18px;font-weight:800}.geeky-logo-symbol:before,.geeky-logo-symbol:after{content:"";position:absolute;inset:7px 4px;border:5px solid currentColor;border-left-color:transparent;border-right-color:transparent;border-radius:10px}.geeky-logo-symbol i{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--g-primary);top:0;left:30px;box-shadow:13px 9px 0 var(--g-primary)}.geeky-logo-symbol b{font-size:18px;letter-spacing:3px;z-index:2}.geeky-nav-cluster{margin-left:auto;display:flex;align-items:center;gap:52px}.geeky-nav{display:flex;align-items:center;gap:42px;color:#111;font-size:18px}.geeky-nav a,.geeky-pages-link{padding:17px 21px;border-radius:40px;white-space:nowrap;font-weight:600}.geeky-nav .active{background:var(--g-primary);color:#fff}.geeky-nav a:hover,.geeky-pages-link:hover{color:var(--g-primary)}.geeky-nav .active:hover{color:#fff}.geeky-header-tools{display:flex;align-items:center;gap:22px}.geeky-socials{display:flex;align-items:center;gap:24px}.geeky-social{width:22px;height:22px;display:grid;place-items:center;color:#111}.geeky-social svg{width:20px;height:20px;fill:currentColor}.geeky-tool-divider{height:42px;width:1px;background:#ddd;margin:0 5px}.geeky-theme-button,.geeky-search-button{border:0;background:none;display:grid;place-items:center;cursor:pointer}.geeky-theme-button{font-size:30px;transform:rotate(-45deg);color:#10192c}.geeky-search-button{width:54px;height:54px;border-radius:50%;background:var(--g-primary);color:#fff}.geeky-search-button svg{width:25px;height:25px}.geeky-menu-button{display:none;border:0;background:var(--g-primary);width:48px;height:48px;border-radius:50%;padding:13px;cursor:pointer}.geeky-menu-button span{display:block;height:2px;background:white;margin:4px 0}.geeky-hero{position:relative;overflow:hidden;padding:84px 0 0;min-height:615px;background:#fff}.geeky-hero-shape{object-fit:cover;object-position:bottom;z-index:0!important}.geeky-hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1fr) minmax(480px,.82fr);align-items:center;gap:30px}.geeky-hero-copy{padding:28px 0 95px}.geeky-hero-copy h1{margin:0;color:#050505;letter-spacing:-4px;line-height:.98}.geeky-hero-copy h1 strong{display:block;font-size:clamp(72px,7.2vw,118px);font-weight:800}.geeky-hero-copy h1 em{font-style:normal;color:var(--g-primary)}.geeky-hero-copy h1 span{display:block;margin-top:25px;font-size:clamp(48px,5vw,84px);font-weight:400;letter-spacing:-3px}.geeky-hero-copy p{max-width:800px;margin:42px 0 0;font-size:22px;line-height:1.65;color:#5f5f5f}.geeky-primary-button{display:inline-flex;margin-top:34px;align-items:center;justify-content:center;min-width:240px;height:64px;padding:0 30px;border-radius:36px;background:var(--g-primary);color:white!important;font-size:20px;font-weight:700;transition:.2s}.geeky-primary-button:hover{background:var(--g-primary-dark);transform:translateY(-2px)}.geeky-hero-visual{align-self:end;display:flex;justify-content:center}.geeky-hero-visual img{width:min(100%,590px);height:auto;object-fit:contain}.geeky-main-section{padding:90px 0 115px}.geeky-api-notice{margin-bottom:28px;padding:15px 20px;border:1px solid #f0c985;background:#fff8e9;color:#7a5513;border-radius:7px}.geeky-content-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,.82fr);gap:56px;align-items:start}.geeky-main-column{min-width:0}.geeky-section-title{margin:0 0 44px;color:#161616;text-align:center;font-size:38px;line-height:1.1;font-weight:800;position:relative}.geeky-section-title:after{content:"";position:absolute;left:50%;bottom:-20px;width:70px;height:3px;background:var(--g-primary);transform:translateX(-50%)}.geeky-featured-box,.geeky-recent-box,.geeky-widget{border:1px solid var(--g-border);border-radius:6px;background:#fff}.geeky-featured-box{display:grid;grid-template-columns:1.05fr .95fr;gap:30px;padding:28px}.geeky-featured-lead{min-width:0}.geeky-featured-image{position:relative;display:block;height:350px;border-radius:6px;overflow:hidden;background:#eef6f3}.geeky-featured-image img,.geeky-small-image img,.geeky-post-card-image img,.geeky-recent-thumb img{object-fit:cover}.geeky-image-placeholder{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(135deg,#eaf7f2,#f7fbfa);color:var(--g-primary);font-size:42px;font-weight:800}.geeky-post-meta{margin-top:18px;display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;color:#6a6a6a}.geeky-post-meta span{color:var(--g-primary)}.geeky-post-meta i{font-style:normal;color:#bbb}.geeky-post-meta b{color:var(--g-primary)}.geeky-featured-lead h3{margin:13px 0 0;font-size:30px;line-height:1.25;color:#222}.geeky-featured-lead h3 a:hover,.geeky-featured-small h4 a:hover,.geeky-post-card h3 a:hover{color:var(--g-primary)}.geeky-featured-lead p{margin:13px 0 0;font-size:16px;line-height:1.7}.geeky-featured-side{max-height:515px;overflow:auto;padding-right:8px}.geeky-featured-small{display:grid;grid-template-columns:120px 1fr;gap:15px;align-items:center;padding:0 0 22px;margin-bottom:22px;border-bottom:1px solid var(--g-border)}.geeky-featured-small:last-child{margin-bottom:0;border-bottom:0}.geeky-small-image{position:relative;height:94px;border-radius:6px;overflow:hidden;background:#f0f4f2}.geeky-featured-small h4{margin:0;color:#222;font-size:18px;line-height:1.35}.geeky-featured-small small{display:block;margin-top:9px;font-size:12px;color:#777}.geeky-demo-thumb{display:grid;place-items:center;color:var(--g-primary);font-weight:800}.geeky-empty-feature .geeky-featured-image{background:linear-gradient(135deg,#eef7f3,#fafcfc)}.geeky-recent-section{margin-top:78px}.geeky-recent-box{padding:28px}.geeky-post-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:34px 30px}.geeky-post-card{min-width:0}.geeky-post-card-image{position:relative;display:block;height:260px;border-radius:6px;overflow:hidden;background:#f0f5f3}.geeky-post-card h3{margin:12px 0 0;color:#222;font-size:23px;line-height:1.35}.geeky-post-card p{margin:12px 0 0;line-height:1.65}.geeky-empty-posts{padding:65px 25px;text-align:center}.geeky-empty-posts h3{margin:0;color:#222;font-size:30px}.geeky-empty-posts p{max-width:560px;margin:12px auto 0;line-height:1.7}.geeky-sidebar{padding-top:126px}.geeky-widget{position:relative;padding:30px;margin-bottom:28px;overflow:hidden}.geeky-widget-title{position:relative;margin:0 0 44px;color:#222;text-align:center;font-size:24px}.geeky-widget-title:after{content:"";position:absolute;left:50%;bottom:-17px;width:54px;height:3px;background:var(--g-primary);transform:translateX(-50%)}.geeky-about-widget{text-align:center;padding:38px 30px}.geeky-map{object-fit:cover;opacity:.6;z-index:0!important}.geeky-about-widget>*:not(.geeky-map){position:relative;z-index:1}.geeky-sidebar-badge{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;margin:0 auto 16px;background:var(--g-primary);color:white;font-size:20px;font-weight:800}.geeky-about-widget h3{margin:0;color:#222;font-size:25px}.geeky-about-widget p{line-height:1.65}.geeky-mini-socials{display:flex;justify-content:center;gap:12px;margin-top:20px}.geeky-mini-socials span{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#f2f2f2;color:#222;font-size:12px;font-weight:800}.geeky-category-list a{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--g-border);color:#222;font-weight:700}.geeky-category-list a:last-child{border-bottom:0}.geeky-category-list a span{display:flex;align-items:center;gap:8px}.geeky-category-list b{color:var(--g-primary);font-size:24px}.geeky-category-list small{font-size:11px;color:#777}.geeky-recent-list>a{display:grid;grid-template-columns:78px 1fr;gap:14px;align-items:center;padding:16px 0;border-bottom:1px solid var(--g-border)}.geeky-recent-list>a:last-child{border-bottom:0}.geeky-recent-thumb{position:relative;width:78px;height:78px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:#eef7f4;color:var(--g-primary);font-weight:800}.geeky-recent-list strong{display:block;color:#222;line-height:1.35}.geeky-recent-list small{display:block;margin-top:7px;font-size:11px}.geeky-muted{margin:0;text-align:center;line-height:1.6}.geeky-newsletter{text-align:center}.geeky-newsletter p{line-height:1.6}.geeky-newsletter-row{display:flex;margin:22px 0 14px}.geeky-newsletter-row input{min-width:0;flex:1;height:48px;border:1px solid var(--g-border);border-right:0;border-radius:5px 0 0 5px;padding:0 13px;outline:none}.geeky-newsletter-row button{width:52px;border:0;background:var(--g-primary);color:#fff;border-radius:0 5px 5px 0;font-size:22px}.geeky-newsletter small{font-size:11px}.geeky-footer{position:relative;overflow:hidden;padding:110px 0 60px;min-height:410px}.geeky-footer-shape{object-fit:cover;object-position:top;z-index:0!important}.geeky-footer-inner{position:relative;z-index:2;text-align:center}.geeky-footer-logo{justify-content:center}.geeky-footer-inner>p{max-width:650px;margin:25px auto 0;line-height:1.7}.geeky-footer-nav{display:flex;justify-content:center;flex-wrap:wrap;gap:34px;margin-top:32px;color:#222;font-weight:700}.geeky-footer-nav a:hover{color:var(--g-primary)}.geeky-copyright{font-size:13px!important;margin-top:45px!important}.geeky-loading{min-height:60vh;display:flex;align-items:center;justify-content:center;gap:12px}.geeky-loading span{width:18px;height:18px;border-radius:50%;border:3px solid #ddd;border-top-color:var(--g-primary);animation:geeky-spin .8s linear infinite}@keyframes geeky-spin{to{transform:rotate(360deg)}}.geeky-dark .geeky-shell{--g-bg:#111;--g-text:#aaa;--g-dark:#eee;--g-border:#3d3d3d;background:#111}.geeky-dark .geeky-header,.geeky-dark .geeky-featured-box,.geeky-dark .geeky-recent-box,.geeky-dark .geeky-widget{background:#151515;border-color:#3d3d3d}.geeky-dark .geeky-header{border-bottom-color:#333}.geeky-dark .geeky-nav,.geeky-dark .geeky-social,.geeky-dark .geeky-section-title,.geeky-dark .geeky-widget-title,.geeky-dark .geeky-post-card h3,.geeky-dark .geeky-featured-lead h3,.geeky-dark .geeky-featured-small h4,.geeky-dark .geeky-about-widget h3,.geeky-dark .geeky-category-list a,.geeky-dark .geeky-recent-list strong,.geeky-dark .geeky-footer-nav{color:#eee}.geeky-dark .geeky-hero{background:#111}.geeky-dark .geeky-hero-copy h1{color:#fff}.geeky-dark .geeky-hero-copy p{color:#aaa}.geeky-dark .geeky-logo-symbol{color:#eee}@media(max-width:1250px){.geeky-navbar{min-height:105px}.geeky-nav{gap:9px;font-size:16px}.geeky-socials{display:none}.geeky-nav-cluster{gap:24px}.geeky-hero-grid{grid-template-columns:1.05fr .95fr}.geeky-hero-copy h1 strong{font-size:75px}.geeky-hero-copy h1 span{font-size:52px}.geeky-hero-copy p{font-size:18px}}@media(max-width:980px){.geeky-container{width:min(calc(100% - 36px),1540px)}.geeky-navbar{min-height:84px}.geeky-menu-button{display:block;margin-left:auto}.geeky-nav-cluster{display:none;position:absolute;top:84px;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:24px;box-shadow:0 20px 40px rgba(0,0,0,.08)}.geeky-nav-cluster.is-open{display:block}.geeky-nav{display:flex;flex-direction:column;align-items:stretch;gap:4px}.geeky-nav a,.geeky-pages-link{padding:12px 18px}.geeky-header-tools{margin-top:18px;justify-content:center}.geeky-socials{display:flex}.geeky-hero{padding-top:45px}.geeky-hero-grid{grid-template-columns:1fr}.geeky-hero-copy{text-align:center;padding-bottom:20px}.geeky-hero-copy p{margin-inline:auto}.geeky-hero-visual{max-width:560px;margin:0 auto}.geeky-content-grid{grid-template-columns:1fr}.geeky-sidebar{padding-top:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:25px}.geeky-widget{margin:0}.geeky-newsletter{grid-column:1/-1}}@media(max-width:700px){.geeky-container{width:min(calc(100% - 26px),1540px)}.geeky-logo{font-size:27px}.geeky-logo-symbol{width:55px;transform:scale(.9)}.geeky-hero{min-height:auto}.geeky-hero-copy h1{letter-spacing:-2px}.geeky-hero-copy h1 strong{font-size:54px}.geeky-hero-copy h1 span{font-size:37px;letter-spacing:-2px}.geeky-hero-copy p{font-size:16px;margin-top:25px}.geeky-primary-button{height:54px;min-width:190px;font-size:17px}.geeky-main-section{padding:65px 0 80px}.geeky-featured-box{grid-template-columns:1fr;padding:18px}.geeky-featured-image{height:250px}.geeky-featured-side{max-height:none}.geeky-post-grid{grid-template-columns:1fr}.geeky-sidebar{display:block}.geeky-widget{margin-bottom:24px}.geeky-post-card-image{height:240px}.geeky-section-title{font-size:31px}.geeky-footer{padding-top:80px}.geeky-footer-nav{gap:18px}}
+
+
+/* Geeky original-style single post page */
+.geeky-single-post-page{padding:58px 0 100px;background:#fff}.geeky-single-post-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:38px;align-items:start;max-width:1110px}.geeky-single-post-main{min-width:0}.geeky-single-cover{position:relative;overflow:hidden;border-radius:6px;background:#eef5f3;aspect-ratio:16/9}.geeky-single-cover img{width:100%;height:100%;object-fit:cover;display:block}.geeky-single-category{position:absolute;left:14px;top:14px;z-index:2;padding:7px 14px;border-radius:20px;background:var(--g-primary);color:#fff!important;font-size:12px;font-weight:800}.geeky-single-header{padding:16px 0 0}.geeky-single-header h1{margin:0;color:#111;font-size:clamp(38px,4.6vw,62px);line-height:1.04;letter-spacing:-2.2px}.geeky-single-meta{display:flex;flex-wrap:wrap;gap:16px;margin-top:14px;color:#444;font-size:13px}.geeky-single-excerpt{margin:26px 0 0;color:#555;font-size:18px;line-height:1.75}.geeky-single-content{margin-top:34px;color:#555;font-size:17px;line-height:1.9}.geeky-single-content p{margin:0 0 26px}.geeky-single-content h2,.geeky-single-content h3{color:#111;line-height:1.2;margin:38px 0 16px}.geeky-single-content h2{font-size:34px}.geeky-single-content h3{font-size:28px}.geeky-single-content blockquote{margin:34px 0;padding:28px 34px;background:#f5f5f5;border-left:0;border-radius:4px;color:#333;font-size:21px;line-height:1.6;text-align:center}.geeky-single-content img{max-width:100%;height:auto;border-radius:5px}.geeky-single-content a{color:var(--g-primary);text-decoration:underline}.geeky-single-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:36px;padding-top:22px;border-top:1px solid var(--g-border)}.geeky-single-tags span{padding:7px 12px;border-radius:18px;background:#f2f6f4;color:#555;font-size:12px;font-weight:700}.geeky-single-sidebar{display:grid;gap:18px}.geeky-author-card,.geeky-sidebar-box{position:relative;border:1px solid #ddd;background:#fff;padding:28px}.geeky-author-card{text-align:center;overflow:hidden}.geeky-author-watermark{position:absolute;inset:15px 15px auto 15px;height:120px;color:#edf2f0;font-size:120px;line-height:1;opacity:.65;pointer-events:none}.geeky-author-logo{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:85px}.geeky-author-logo strong{color:var(--g-primary);font-size:21px}.geeky-author-card p{position:relative;z-index:1;margin:24px 0 0;color:#666;font-size:14px;line-height:1.7}.geeky-author-socials{position:relative;z-index:1;display:flex;justify-content:center;gap:12px;margin-top:24px}.geeky-author-socials a{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;color:#222;font-size:9px;font-weight:800}.geeky-sidebar-heading{text-align:center}.geeky-sidebar-heading h3{margin:0;color:#111;font-size:26px}.geeky-sidebar-heading span{display:block;width:66px;height:8px;margin:7px auto 0;background:repeating-linear-gradient(135deg,var(--g-primary) 0 3px,transparent 3px 6px)}.geeky-sidebar-tabs{display:flex;justify-content:center;gap:10px;margin:28px 0 18px}.geeky-sidebar-tabs button{border:1px solid var(--g-primary);background:#fff;color:var(--g-primary);padding:9px 18px;border-radius:24px;font-size:12px;font-weight:800}.geeky-sidebar-tabs button.active{background:var(--g-primary);color:#fff}.geeky-sidebar-posts{display:grid}.geeky-sidebar-posts article{display:grid;grid-template-columns:74px minmax(0,1fr);gap:12px;padding:15px 0;border-bottom:1px solid #eee}.geeky-sidebar-posts article:last-child{border-bottom:0}.geeky-sidebar-thumb{display:block;width:74px;height:74px;border-radius:50%;overflow:hidden;background:#eef5f3}.geeky-sidebar-thumb img{width:100%;height:100%;object-fit:cover}.geeky-sidebar-thumb span{display:grid;width:100%;height:100%;place-items:center;font-weight:800}.geeky-sidebar-posts h4{margin:4px 0 8px;font-size:15px;line-height:1.15}.geeky-sidebar-posts h4 a{color:#111}.geeky-sidebar-posts small{color:#777;font-size:11px}.geeky-sidebar-empty{margin:16px 0 0;text-align:center;color:#777;font-size:13px}.geeky-dark .geeky-single-post-page{background:#111}.geeky-dark .geeky-author-card,.geeky-dark .geeky-sidebar-box{background:#171717;border-color:#333}.geeky-dark .geeky-single-header h1,.geeky-dark .geeky-single-content h2,.geeky-dark .geeky-single-content h3,.geeky-dark .geeky-sidebar-heading h3,.geeky-dark .geeky-sidebar-posts h4 a{color:#eee}.geeky-dark .geeky-single-content,.geeky-dark .geeky-single-excerpt,.geeky-dark .geeky-author-card p{color:#bbb}.geeky-dark .geeky-single-content blockquote{background:#1c1c1c;color:#ddd}@media(max-width:920px){.geeky-single-post-grid{grid-template-columns:1fr}.geeky-single-sidebar{grid-template-columns:1fr 1fr}.geeky-author-card{min-height:100%}}@media(max-width:680px){.geeky-single-post-page{padding-top:34px}.geeky-single-header h1{font-size:40px;letter-spacing:-1.4px}.geeky-single-sidebar{grid-template-columns:1fr}.geeky-author-card,.geeky-sidebar-box{padding:22px}}
+
+
+/* =========================================================
+   GEEKY FULL SINGLE BLOG LAYOUT
+   Reference: original Geeky single-post page
+   ========================================================= */
+
+.geeky-single-post-page {
+  padding: 58px 0 0;
+  background: #fff;
+}
+
+/* Shared Geeky width system: keep header and page content on the same centered rail. */
+.geeky-shell,
+.geeky-shell main,
+.geeky-header,
+.geeky-navbar,
+.geeky-nav-cluster,
+.geeky-nav,
+.geeky-header-tools {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.geeky-container {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: 32px;
+}
+
+.geeky-navbar {
+  min-height: 105px;
+  gap: 24px;
+}
+
+.geeky-logo {
+  flex: 0 0 auto;
+  gap: 0;
+  font-size: 0;
+}
+
+.geeky-logo-dark {
+  display: none !important;
+}
+
+.geeky-dark .geeky-logo-light {
+  display: none !important;
+}
+
+.geeky-dark .geeky-logo-dark {
+  display: block !important;
+}
+
+.geeky-logo-symbol {
+  flex: 0 0 62px;
+  width: 62px;
+}
+
+.geeky-nav-cluster {
+  justify-content: flex-end;
+  gap: 24px;
+}
+
+.geeky-nav {
+  gap: 12px;
+  font-size: 13.5px;
+}
+
+.geeky-nav a,
+.geeky-pages-link {
+  padding: 10px 16px;
+}
+
+.geeky-header-tools {
+  flex: 0 0 auto;
+  gap: 14px;
+}
+
+.geeky-socials {
+  gap: 12px;
+}
+
+.geeky-social {
+  width: 20px;
+  height: 20px;
+}
+
+.geeky-social svg {
+  width: 19px;
+  height: 19px;
+}
+
+.geeky-tool-divider {
+  height: 38px;
+  margin-inline: 3px;
+}
+
+.geeky-search-button {
+  width: 40px;
+  height: 40px;
+}
+
+@media (max-width: 1100px) {
+  .geeky-menu-button {
+    display: block;
+    flex: 0 0 48px;
+    margin-left: auto;
+  }
+
+  .geeky-nav-cluster {
+    display: none;
+    position: absolute;
+    top: 105px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: none;
+    background: #fff;
+    border-top: 1px solid #eee;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  }
+
+  .geeky-nav-cluster.is-open {
+    display: block;
+  }
+
+  .geeky-nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .geeky-header-tools {
+    margin-top: 18px;
+    justify-content: center;
+  }
+
+  .geeky-nav-cluster .geeky-socials {
+    display: flex;
+  }
+}
+
+@media (max-width: 980px) {
+  .geeky-nav-cluster {
+    top: 84px;
+  }
+}
+
+@media (max-width: 700px) {
+  .geeky-container {
+    padding-inline: 16px;
+  }
+}
+
+.geeky-footer {
+  min-height: 0;
+  margin-top: 48px;
+  padding: 70px 0 50px;
+}
+
+.geeky-footer-logo img {
+  width: 150px;
+  height: auto;
+}
+
+.geeky-footer-inner > p {
+  max-width: 638px;
+  margin-top: 24px;
+}
+
+.geeky-footer-nav {
+  gap: 0;
+  margin-top: 24px;
+  margin-bottom: 48px;
+}
+
+.geeky-footer-nav a {
+  display: inline-block;
+  padding: 16px;
+}
+
+.geeky-footer-socials {
+  display: flex;
+  width: max-content;
+  max-width: 100%;
+  justify-content: center;
+  margin-inline: auto;
+  margin-bottom: 48px;
+  border-inline: 1px solid var(--g-primary);
+  padding-inline: 16px;
+}
+
+.geeky-header .geeky-socials {
+  display: flex;
+  border-inline: 1px solid var(--g-primary);
+  padding-inline: 16px;
+}
+
+.geeky-search-modal {
+  visibility: hidden;
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 150ms ease, visibility 150ms ease;
+}
+
+.geeky-search-modal.is-open {
+  visibility: visible;
+  opacity: 1;
+}
+
+.geeky-search-modal input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  padding: 0 52px 0 16px;
+  color: #222;
+  font-size: 18px;
+}
+
+.geeky-search-close {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  padding: 12px;
+  color: #222;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.geeky-dark .geeky-search-modal {
+  background: #111;
+}
+
+.geeky-dark .geeky-search-modal input,
+.geeky-dark .geeky-search-close {
+  color: #eee;
+}
+
+.geeky-copyright {
+  margin-top: 0 !important;
+}
+
+.geeky-single-post-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 760px) 300px;
+  justify-content: center;
+  gap: 34px;
+  align-items: start;
+  max-width: 1120px;
+}
+
+.geeky-single-post-main {
+  min-width: 0;
+}
+
+.geeky-single-cover {
+  position: relative;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #eef5f3;
+  aspect-ratio: 16 / 8.2;
+}
+
+.geeky-single-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.geeky-single-category {
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  z-index: 2;
+  padding: 7px 15px;
+  border-radius: 20px;
+  background: var(--g-primary);
+  color: #fff !important;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.geeky-single-header {
+  padding: 17px 0 0;
+}
+
+.geeky-single-header h1 {
+  margin: 0;
+  color: #111;
+  font-size: clamp(34px, 3.4vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -1.8px;
+}
+
+.geeky-single-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+  color: #555;
+  font-size: 12px;
+}
+
+.geeky-single-excerpt {
+  margin: 24px 0 0;
+  color: #616161;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.geeky-single-content {
+  margin-top: 24px;
+  color: #5d5d5d;
+  font-size: 15px;
+  line-height: 1.82;
+}
+
+.geeky-single-content p {
+  margin: 0 0 24px;
+}
+
+.geeky-single-content h2 {
+  margin: 33px 0 16px;
+  color: #111;
+  font-size: 31px;
+  line-height: 1.15;
+}
+
+.geeky-single-content h3 {
+  margin: 30px 0 14px;
+  color: #111;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.geeky-single-content blockquote {
+  margin: 30px 0;
+  padding: 28px 46px;
+  background: #f3f3f3;
+  color: #333;
+  border: 0;
+  border-radius: 3px;
+  text-align: center;
+  font-size: 20px;
+  line-height: 1.5;
+}
+
+.geeky-single-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 28px auto 8px;
+  border-radius: 3px;
+}
+
+.geeky-single-content figure {
+  margin: 30px 0;
+}
+
+.geeky-single-content figcaption {
+  margin-top: 8px;
+  text-align: center;
+  color: #999;
+  font-size: 11px;
+  font-style: italic;
+}
+
+.geeky-single-content a {
+  color: var(--g-primary);
+  text-decoration: underline;
+}
+
+.geeky-single-content ul,
+.geeky-single-content ol {
+  padding-left: 24px;
+  margin: 0 0 24px;
+}
+
+.geeky-single-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 30px;
+  padding-top: 18px;
+  border-top: 1px solid var(--g-border);
+}
+
+.geeky-single-tags span {
+  padding: 7px 12px;
+  border-radius: 18px;
+  background: #f2f6f4;
+  color: #555;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.geeky-post-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 90px;
+  margin-top: 30px;
+  padding-top: 24px;
+}
+
+.geeky-post-nav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 78px;
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 24px;
+  background: var(--g-primary);
+  color: #fff !important;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.geeky-single-sidebar {
+  display: grid;
+  gap: 18px;
+}
+
+.geeky-author-card,
+.geeky-sidebar-box {
+  position: relative;
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 26px;
+}
+
+.geeky-author-card {
+  min-height: 330px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.geeky-author-watermark {
+  position: absolute;
+  inset: 24px 20px auto;
+  height: 100px;
+  color: #eff3f1;
+  font-size: 100px;
+  line-height: 1;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.geeky-author-logo {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 102px;
+}
+
+.geeky-author-logo strong {
+  color: var(--g-primary);
+  font-size: 20px;
+}
+
+.geeky-author-card p {
+  position: relative;
+  z-index: 1;
+  margin: 23px 0 0;
+  color: #666;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.geeky-author-socials {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 22px;
+}
+
+.geeky-author-socials a {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #222;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.geeky-author-socials a:hover {
+  color: var(--g-primary);
+}
+
+.geeky-sidebar-heading {
+  text-align: center;
+}
+
+.geeky-sidebar-heading h3 {
+  margin: 0;
+  color: #111;
+  font-size: 24px;
+}
+
+.geeky-sidebar-heading > span,
+.geeky-block-heading > span {
+  display: block;
+  width: 70px;
+  height: 8px;
+  margin: 7px auto 0;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--g-primary) 0 3px,
+    transparent 3px 6px
+  );
+}
+
+.geeky-sidebar-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 26px 0 16px;
+}
+
+.geeky-sidebar-tabs span,
+.geeky-sidebar-tabs b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 76px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--g-primary);
+  border-radius: 22px;
+  font-size: 11px;
+}
+
+.geeky-sidebar-tabs span {
+  color: var(--g-primary);
+}
+
+.geeky-sidebar-tabs b {
+  background: var(--g-primary);
+  color: #fff;
+}
+
+.geeky-sidebar-posts article {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 11px;
+  padding: 14px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.geeky-sidebar-posts article:last-child {
+  border-bottom: 0;
+}
+
+.geeky-sidebar-thumb {
+  display: block;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #eef5f3;
+}
+
+.geeky-sidebar-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.geeky-sidebar-thumb span {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  color: var(--g-primary);
+  font-weight: 800;
+}
+
+.geeky-sidebar-posts h4 {
+  margin: 4px 0 7px;
+  font-size: 14px;
+  line-height: 1.18;
+}
+
+.geeky-sidebar-posts h4 a {
+  color: #111;
+}
+
+.geeky-sidebar-posts small {
+  color: #777;
+  font-size: 10px;
+}
+
+.geeky-sidebar-empty {
+  text-align: center;
+  color: #777;
+  font-size: 12px;
+}
+
+.geeky-sidebar-newsletter {
+  text-align: center;
+}
+
+.geeky-sidebar-newsletter > p {
+  margin: 22px 0 17px;
+  color: #777;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.geeky-sidebar-newsletter form {
+  display: grid;
+  gap: 10px;
+}
+
+.geeky-sidebar-newsletter input {
+  width: 100%;
+  height: 44px;
+  border: 0;
+  border-radius: 24px;
+  padding: 0 16px;
+  background: #f3f3f3;
+  outline: none;
+  font-size: 12px;
+}
+
+.geeky-sidebar-newsletter button {
+  height: 42px;
+  border: 0;
+  border-radius: 24px;
+  background: var(--g-primary);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.geeky-sidebar-newsletter small {
+  display: block;
+  margin-top: 14px;
+  color: #999;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.geeky-comments-placeholder {
+  margin-top: 50px;
+  padding-top: 36px;
+  border-top: 1px solid #eee;
+}
+
+.geeky-block-heading {
+  text-align: center;
+}
+
+.geeky-block-heading h2 {
+  margin: 0;
+  color: #111;
+  font-size: 24px;
+}
+
+.geeky-reaction-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.geeky-reaction-row button {
+  display: grid;
+  gap: 5px;
+  place-items: center;
+  min-width: 54px;
+  border: 0;
+  background: transparent;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.geeky-reaction-row small {
+  color: #777;
+  font-size: 9px;
+}
+
+.geeky-comment-box {
+  margin-top: 30px;
+  padding: 22px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.geeky-comment-box strong {
+  color: #111;
+}
+
+.geeky-comment-box p {
+  margin: 8px 0 0;
+  color: #777;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.geeky-related-wrap {
+  margin-top: 60px;
+  padding: 46px 0 92px;
+  border-top: 1px solid #eee;
+}
+
+.geeky-related-inner {
+  max-width: 1120px;
+}
+
+.geeky-related-heading {
+  text-align: left;
+}
+
+.geeky-related-heading h2 {
+  font-size: 30px;
+}
+
+.geeky-related-heading > span {
+  margin-left: 0;
+}
+
+.geeky-related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 34px;
+}
+
+.geeky-related-card {
+  min-width: 0;
+}
+
+.geeky-related-image {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 16 / 8.5;
+  border-radius: 3px;
+  background: #eef5f3;
+}
+
+.geeky-related-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.geeky-related-image > span {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  color: var(--g-primary);
+  font-weight: 800;
+}
+
+.geeky-related-image b {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 10px;
+  border-radius: 18px;
+  background: var(--g-primary);
+  color: #fff;
+  font-size: 10px;
+}
+
+.geeky-related-card h3 {
+  margin: 13px 0 0;
+  color: #111;
+  font-size: 17px;
+  line-height: 1.28;
+}
+
+.geeky-related-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 9px;
+  color: #666;
+  font-size: 9px;
+}
+
+.geeky-related-card p {
+  margin: 11px 0 0;
+  color: #777;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.geeky-related-read {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 92px;
+  height: 38px;
+  margin-top: 17px;
+  padding: 0 15px;
+  border: 1px solid var(--g-primary);
+  border-radius: 22px;
+  color: var(--g-primary) !important;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.geeky-related-empty {
+  margin-top: 30px;
+  color: #777;
+}
+
+.geeky-dark .geeky-single-post-page {
+  background: #111;
+}
+
+.geeky-dark .geeky-author-card,
+.geeky-dark .geeky-sidebar-box,
+.geeky-dark .geeky-comment-box {
+  background: #171717;
+  border-color: #333;
+}
+
+.geeky-dark .geeky-single-header h1,
+.geeky-dark .geeky-single-content h2,
+.geeky-dark .geeky-single-content h3,
+.geeky-dark .geeky-sidebar-heading h3,
+.geeky-dark .geeky-sidebar-posts h4 a,
+.geeky-dark .geeky-block-heading h2,
+.geeky-dark .geeky-related-card h3,
+.geeky-dark .geeky-comment-box strong {
+  color: #eee;
+}
+
+.geeky-dark .geeky-single-content,
+.geeky-dark .geeky-single-excerpt,
+.geeky-dark .geeky-author-card p {
+  color: #bbb;
+}
+
+.geeky-dark .geeky-single-content blockquote {
+  background: #1c1c1c;
+  color: #ddd;
+}
+
+.geeky-dark .geeky-related-wrap,
+.geeky-dark .geeky-comments-placeholder {
+  border-color: #333;
+}
+
+@media (max-width: 980px) {
+  .geeky-single-post-grid {
+    grid-template-columns: 1fr;
+    max-width: 780px;
+  }
+
+  .geeky-single-sidebar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .geeky-sidebar-newsletter {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .geeky-single-post-page {
+    padding-top: 34px;
+  }
+
+  .geeky-single-header h1 {
+    font-size: 38px;
+    letter-spacing: -1.2px;
+  }
+
+  .geeky-single-content {
+    font-size: 15px;
+  }
+
+  .geeky-single-content blockquote {
+    padding: 22px;
+    font-size: 17px;
+  }
+
+  .geeky-single-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .geeky-sidebar-newsletter {
+    grid-column: auto;
+  }
+
+  .geeky-related-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .geeky-related-heading {
+    text-align: center;
+  }
+
+  .geeky-related-heading > span {
+    margin-left: auto;
+  }
+}

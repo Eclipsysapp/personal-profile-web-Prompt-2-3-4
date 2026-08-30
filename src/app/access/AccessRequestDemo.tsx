@@ -42,6 +42,24 @@ type Visitor = {
   status?: string;
 };
 
+type AccessCategory = {
+  id: number;
+  name: string;
+};
+
+type AccessRequestRecord = {
+  id: number;
+  visitor_id?: number;
+  relation_category_id?: number | null;
+  access_purpose_category_id?: number | null;
+  custom_relation?: string | null;
+  custom_purpose?: string | null;
+  how_do_you_know_me?: string | null;
+  additional_message?: string | null;
+  status?: string;
+  requested_at?: string | null;
+};
+
 type ApiErrorResponse = {
   message?: string;
   errors?: Record<string, string[]>;
@@ -68,6 +86,21 @@ export default function AccessRequestDemo() {
 
   const [error, setError] =
     useState("");
+
+  const [relationCategories, setRelationCategories] =
+    useState<AccessCategory[]>([]);
+
+  const [purposeCategories, setPurposeCategories] =
+    useState<AccessCategory[]>([]);
+
+  const [categoriesLoading, setCategoriesLoading] =
+    useState(true);
+
+  const [accessRequest, setAccessRequest] =
+    useState<AccessRequestRecord | null>(null);
+
+  const [nextPath, setNextPath] =
+    useState("/profile");
 
   const [otpCode, setOtpCode] =
     useState("");
@@ -120,7 +153,7 @@ export default function AccessRequestDemo() {
   |--------------------------------------------------------------------------
   */
 
-  useEffect(() => {
+    useEffect(() => {
     return () => {
       try {
         recaptchaVerifierRef.current?.clear();
@@ -133,6 +166,149 @@ export default function AccessRequestDemo() {
     };
   }, []);
 
+  /*
+  |--------------------------------------------------------------------------
+  | Load Public Access Categories
+  |--------------------------------------------------------------------------
+  */
+
+  async function loadAccessCategories() {
+    setCategoriesLoading(true);
+
+    try {
+      const [relationResponse, purposeResponse] =
+        await Promise.all([
+          fetch(`${API_URL}/api/relation-categories`, {
+            headers: {
+              Accept: "application/json",
+            },
+          }),
+          fetch(
+            `${API_URL}/api/access-purpose-categories`,
+            {
+              headers: {
+                Accept: "application/json",
+              },
+            },
+          ),
+        ]);
+
+      const relationData =
+        (await relationResponse.json()) as unknown;
+
+      const purposeData =
+        (await purposeResponse.json()) as unknown;
+
+      if (!relationResponse.ok) {
+        throw new Error(
+          getApiErrorMessage(
+            relationData as ApiErrorResponse,
+          ),
+        );
+      }
+
+      if (!purposeResponse.ok) {
+        throw new Error(
+          getApiErrorMessage(
+            purposeData as ApiErrorResponse,
+          ),
+        );
+      }
+
+      const relations =
+        normalizeAccessCategories(
+          relationData,
+          [
+            "relation_categories",
+            "categories",
+            "data",
+          ],
+        );
+
+      const purposes =
+        normalizeAccessCategories(
+          purposeData,
+          [
+            "access_purpose_categories",
+            "purpose_categories",
+            "categories",
+            "data",
+          ],
+        );
+
+      setRelationCategories(relations);
+      setPurposeCategories(purposes);
+
+      if (relations.length > 0) {
+        setForm((current) => {
+          const currentExists = relations.some(
+            (item) =>
+              item.name === current.relation,
+          );
+
+          return currentExists
+            ? current
+            : {
+                ...current,
+                relation: relations[0].name,
+              };
+        });
+      }
+
+      if (purposes.length > 0) {
+        setForm((current) => {
+          const currentExists = purposes.some(
+            (item) =>
+              item.name === current.purpose,
+          );
+
+          return currentExists
+            ? current
+            : {
+                ...current,
+                purpose: purposes[0].name,
+              };
+        });
+      }
+    } catch (caughtError) {
+      console.error(
+        "Unable to load access categories:",
+        caughtError,
+      );
+
+      setError(
+        getCaughtErrorMessage(
+          caughtError,
+          "Unable to load access categories.",
+        ),
+      );
+    } finally {
+      setCategoriesLoading(false);
+    }
+  }
+useEffect(() => {
+  const timer = window.setTimeout(() => {
+    const params = new URLSearchParams(
+      window.location.search,
+    );
+
+    const requestedNext = params.get("next");
+
+    if (
+      requestedNext &&
+      requestedNext.startsWith("/") &&
+      !requestedNext.startsWith("//")
+    ) {
+      setNextPath(requestedNext);
+    }
+
+    void loadAccessCategories();
+  }, 0);
+
+  return () => {
+    window.clearTimeout(timer);
+  };
+}, []);
   /*
   |--------------------------------------------------------------------------
   | Register Visitor
@@ -487,6 +663,124 @@ export default function AccessRequestDemo() {
 
   /*
   |--------------------------------------------------------------------------
+  | Submit Real Access Request
+  |--------------------------------------------------------------------------
+  */
+
+  async function submitAccessRequest() {
+    if (!visitor) {
+      setError(
+        "Visitor information is missing.",
+      );
+      return;
+    }
+
+    const relation =
+      relationCategories.find(
+        (item) =>
+          item.name === form.relation,
+      ) ?? null;
+
+    const purpose =
+      purposeCategories.find(
+        (item) =>
+          item.name === form.purpose,
+      ) ?? null;
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const securityContext =
+        await getSecurityContext();
+
+      const response = await fetch(
+        `${API_URL}/api/access-requests`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+            Accept:
+              "application/json",
+          },
+          body: JSON.stringify({
+            visitor_id: visitor.id,
+            relation_category_id:
+              relation?.id ?? null,
+            access_purpose_category_id:
+              purpose?.id ?? null,
+            custom_relation:
+              relation
+                ? null
+                : form.relation.trim() || null,
+            custom_purpose:
+              purpose
+                ? null
+                : form.purpose.trim() || null,
+            how_do_you_know_me:
+              form.howKnow.trim() || null,
+            additional_message:
+              form.message.trim() || null,
+            ...securityContext,
+          }),
+        },
+      );
+
+      const data =
+        (await response.json()) as {
+          success?: boolean;
+          message?: string;
+          access_request?:
+            AccessRequestRecord;
+          errors?: Record<
+            string,
+            string[]
+          >;
+        };
+
+      if (!response.ok) {
+        if (
+          response.status === 409 &&
+          data.access_request?.id
+        ) {
+          setAccessRequest(
+            data.access_request,
+          );
+          setStep("pending");
+          return;
+        }
+
+        throw new Error(
+          getApiErrorMessage(data),
+        );
+      }
+
+      if (!data.access_request?.id) {
+        throw new Error(
+          "Access request was submitted but its ID was not returned.",
+        );
+      }
+
+      setAccessRequest(
+        data.access_request,
+      );
+
+      setStep("pending");
+    } catch (caughtError) {
+      setError(
+        getCaughtErrorMessage(
+          caughtError,
+          "Unable to submit access request.",
+        ),
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  /*
+  |--------------------------------------------------------------------------
   | Main Form Submit
   |--------------------------------------------------------------------------
   */
@@ -507,13 +801,8 @@ export default function AccessRequestDemo() {
 
       return;
     }
-
-    /*
-     * /api/access-requests will be
-     * connected in the next step.
-     */
     if (step === "request") {
-      setStep("pending");
+      await submitAccessRequest();
     }
   }
 
@@ -572,10 +861,9 @@ export default function AccessRequestDemo() {
           </span>
 
           <span>
-            Registration and Firebase mobile
-            verification use the real backend.
-            Access-request submission is the next
-            integration step.
+            Registration, Firebase mobile
+            verification and access-request
+            submission use the real backend.
           </span>
         </div>
       </div>
@@ -754,6 +1042,15 @@ export default function AccessRequestDemo() {
                       form={form}
                       setForm={setForm}
                       visitor={visitor}
+                      relationCategories={
+                        relationCategories
+                      }
+                      purposeCategories={
+                        purposeCategories
+                      }
+                      categoriesLoading={
+                        categoriesLoading
+                      }
                     />
                   )}
                 </div>
@@ -823,6 +1120,10 @@ export default function AccessRequestDemo() {
               <PendingState
                 form={form}
                 visitor={visitor}
+                accessRequest={
+                  accessRequest
+                }
+                nextPath={nextPath}
               />
             )}
           </div>
@@ -1094,6 +1395,9 @@ function AccessPurpose({
   form,
   setForm,
   visitor,
+  relationCategories,
+  purposeCategories,
+  categoriesLoading,
 }: {
   form: FormData;
 
@@ -1102,6 +1406,15 @@ function AccessPurpose({
   >;
 
   visitor: Visitor | null;
+
+  relationCategories:
+    AccessCategory[];
+
+  purposeCategories:
+    AccessCategory[];
+
+  categoriesLoading:
+    boolean;
 }) {
   return (
     <div className="grid gap-5">
@@ -1140,29 +1453,26 @@ function AccessPurpose({
             }
             className={inputClass}
           >
-            <option>
-              Professional Contact
-            </option>
-
-            <option>
-              Recruiter
-            </option>
-
-            <option>
-              Client
-            </option>
-
-            <option>
-              Business Contact
-            </option>
-
-            <option>
-              Friend
-            </option>
-
-            <option>
-              Other
-            </option>
+            {categoriesLoading ? (
+              <option>
+                Loading relationships...
+              </option>
+            ) : relationCategories.length ? (
+              relationCategories.map(
+                (category) => (
+                  <option
+                    key={category.id}
+                    value={category.name}
+                  >
+                    {category.name}
+                  </option>
+                ),
+              )
+            ) : (
+              <option value={form.relation}>
+                {form.relation || "Other"}
+              </option>
+            )}
           </select>
         </Field>
 
@@ -1181,29 +1491,26 @@ function AccessPurpose({
             }
             className={inputClass}
           >
-            <option>
-              Portfolio Review
-            </option>
-
-            <option>
-              Employment Opportunity
-            </option>
-
-            <option>
-              Business Opportunity
-            </option>
-
-            <option>
-              Professional Networking
-            </option>
-
-            <option>
-              Project Discussion
-            </option>
-
-            <option>
-              Other
-            </option>
+            {categoriesLoading ? (
+              <option>
+                Loading purposes...
+              </option>
+            ) : purposeCategories.length ? (
+              purposeCategories.map(
+                (category) => (
+                  <option
+                    key={category.id}
+                    value={category.name}
+                  >
+                    {category.name}
+                  </option>
+                ),
+              )
+            ) : (
+              <option value={form.purpose}>
+                {form.purpose || "Other"}
+              </option>
+            )}
           </select>
         </Field>
       </div>
@@ -1242,11 +1549,11 @@ function AccessPurpose({
         />
       </Field>
 
-      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-xs leading-6 text-amber-800">
-        Access-request submission is still
-        preview-only. Next we will load the real
-        relation/purpose categories from Laravel
-        and submit this step to{" "}
+      <div className="rounded-2xl border border-blue-100 bg-blue-50 p-5 text-xs leading-6 text-blue-800">
+        Relationship and purpose options are
+        loaded from Laravel. Submitting this
+        form creates the real pending request
+        through{" "}
         <strong>/api/access-requests</strong>.
       </div>
     </div>
@@ -1262,9 +1569,14 @@ function AccessPurpose({
 function PendingState({
   form,
   visitor,
+  accessRequest,
+  nextPath,
 }: {
   form: FormData;
   visitor: Visitor | null;
+  accessRequest:
+    AccessRequestRecord | null;
+  nextPath: string;
 }) {
   return (
     <div className="px-6 py-12 sm:px-8">
@@ -1274,17 +1586,20 @@ function PendingState({
         </div>
 
         <span className="mt-7 inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 text-[11px] font-bold text-amber-700">
-          Preview only
+          Pending admin approval
         </span>
 
         <h3 className="mt-5 text-3xl font-semibold tracking-[-0.04em]">
-          Access request preview
+          Access request submitted
         </h3>
 
         <p className="mt-4 text-sm leading-7 text-slate-500">
-          Visitor registration and mobile OTP
-          verification are real. Access request
-          API integration comes next.
+          Your verified access request is now
+          waiting for admin review. After
+          approval, the email access code,
+          device authorization and secure
+          session steps will unlock the
+          requested private page.
         </p>
       </div>
 
@@ -1313,6 +1628,28 @@ function PendingState({
         <SummaryRow
           label="Mobile status"
           value="Verified"
+        />
+
+        <SummaryRow
+          label="Request ID"
+          value={
+            accessRequest?.id
+              ? String(accessRequest.id)
+              : "—"
+          }
+        />
+
+        <SummaryRow
+          label="Status"
+          value={
+            accessRequest?.status ??
+            "pending"
+          }
+        />
+
+        <SummaryRow
+          label="Requested page"
+          value={nextPath}
         />
 
         <SummaryRow
@@ -1773,6 +2110,79 @@ function getBrowserFingerprint() {
 | Helpers
 |--------------------------------------------------------------------------
 */
+
+function normalizeAccessCategories(
+  payload: unknown,
+  keys: string[],
+): AccessCategory[] {
+  if (!payload || typeof payload !== "object") {
+    return [];
+  }
+
+  const record =
+    payload as Record<string, unknown>;
+
+  let raw: unknown = null;
+
+  for (const key of keys) {
+    if (Array.isArray(record[key])) {
+      raw = record[key];
+      break;
+    }
+  }
+
+  if (!raw && Array.isArray(payload)) {
+    raw = payload;
+  }
+
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+
+  return raw
+    .map((item) => {
+      if (
+        !item ||
+        typeof item !== "object"
+      ) {
+        return null;
+      }
+
+      const value =
+        item as Record<string, unknown>;
+
+      const id = Number(value.id);
+
+      const nameCandidate =
+        value.name ??
+        value.label ??
+        value.title;
+
+      const name =
+        typeof nameCandidate === "string"
+          ? nameCandidate.trim()
+          : "";
+
+      if (
+        !Number.isInteger(id) ||
+        id <= 0 ||
+        !name
+      ) {
+        return null;
+      }
+
+      return {
+        id,
+        name,
+      };
+    })
+    .filter(
+      (
+        item,
+      ): item is AccessCategory =>
+        item !== null,
+    );
+}
 
 function normalizePhoneForFirebase(
   mobile: string,

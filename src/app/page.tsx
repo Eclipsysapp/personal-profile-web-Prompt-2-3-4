@@ -1,3 +1,4 @@
+import Link from "next/link";
 export default function Home() {
   const websiteSchema = {
     "@context": "https://schema.org",
@@ -22,14 +23,14 @@ export default function Home() {
       <main className="site-shell">
         <header className="site-header">
           <div className="container header-inner">
-            <a href="/" className="brand" aria-label="Home">
-              <span className="brand-mark">P</span>
+            <Link href="/" className="brand" aria-label="Home">
+  <span className="brand-mark">P</span>
 
-              <span className="brand-copy">
-                <strong>Professional Profile</strong>
-                <small>Private Digital Portfolio</small>
-              </span>
-            </a>
+  <span className="brand-copy">
+    <strong>Professional Profile</strong>
+    <small>Private Digital Portfolio</small>
+  </span>
+</Link>
 
             <nav
               className="desktop-nav"
