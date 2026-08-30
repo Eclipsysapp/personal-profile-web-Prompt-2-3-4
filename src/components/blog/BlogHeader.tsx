@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { ProtectedLink } from "@/components/security/ProtectedLink";
+import { useBlogAuthor } from "./BlogAuthorProvider";
 import type { BlogSite } from "@/types/blog";
 
 type BlogHeaderProps = {
@@ -86,6 +87,8 @@ function YouTubeIcon() {
 export function BlogHeader({ site }: BlogHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
+  const { author, loading: authorLoading, signInUrl, signOut } = useBlogAuthor();
   const socials = site.social_links ?? {};
 
   const facebook = socialUrl(socials, "facebook", "Facebook");
@@ -118,10 +121,9 @@ export function BlogHeader({ site }: BlogHeaderProps) {
           <nav className="geeky-nav" aria-label="Website navigation">
             <Link className="active" href="/blog" onClick={closeMenu}>Home</Link>
             <Link href="/blog" onClick={closeMenu}>Blog</Link>
-            <ProtectedLink href="/about" title="Protected section" onBeforeNavigate={closeMenu}>About</ProtectedLink>
-            <ProtectedLink href="/experience" title="Protected section" onBeforeNavigate={closeMenu}>Experience</ProtectedLink>
-            <ProtectedLink href="/projects" title="Protected section" onBeforeNavigate={closeMenu}>Projects</ProtectedLink>
-            <span className="geeky-pages-link">More <span>⌄</span></span>
+            <Link href="/blog#categories" onClick={closeMenu}>Categories</Link>
+            <Link href="/blog/write" onClick={closeMenu}>Write</Link>
+            <span className="geeky-pages-link"><ProtectedLink href="/about" title="Protected section" onBeforeNavigate={closeMenu}>About</ProtectedLink></span>
           </nav>
 
           <div className="geeky-header-tools">
@@ -151,6 +153,7 @@ export function BlogHeader({ site }: BlogHeaderProps) {
                 <path d="m16 16 5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </button>
+            {!authorLoading && (author ? <div className="blog-author-menu">{author.avatar_url ? <Image unoptimized src={author.avatar_url} alt="" width={30} height={30} /> : <span>{(author.display_name || author.name).charAt(0)}</span>}<div><strong>{author.display_name || author.name}</strong><Link href="/blog/my-posts" onClick={closeMenu}>My Posts</Link><button type="button" onClick={() => void signOut()}>Sign Out</button></div></div> : <button type="button" className="blog-sign-in" onClick={() => setAuthOpen(true)}>Sign in / Write</button>)}
           </div>
         </div>
 
@@ -158,6 +161,7 @@ export function BlogHeader({ site }: BlogHeaderProps) {
           <input name="q" type="search" placeholder="Type and hit enter..." aria-label="Search articles" autoFocus={searchOpen} />
           <button type="button" className="geeky-search-close" aria-label="Close search" onClick={() => setSearchOpen(false)}>×</button>
         </form>
+        {authOpen ? <div className="blog-auth-overlay" role="dialog" aria-modal="true" aria-labelledby="blog-auth-title"><div className="blog-auth-panel"><button type="button" className="blog-auth-close" onClick={() => setAuthOpen(false)} aria-label="Close">×</button><p>Blog community</p><h2 id="blog-auth-title">Sign in to write</h2><span>Choose a social provider. This account is used only for the public blog community.</span><div>{[["google","Google"],["facebook","Facebook"],["github","GitHub"],["x","X / Twitter"]].map(([provider,label]) => <a key={provider} href={signInUrl(provider)}><b aria-hidden="true">{label.charAt(0)}</b>Continue with {label}</a>)}</div></div></div> : null}
       </div>
     </header>
   );

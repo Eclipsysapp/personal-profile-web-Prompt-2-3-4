@@ -4,7 +4,12 @@ import type {
   BlogSiteResponse,
   FeaturedBlogsResponse,
   SingleBlogResponse,
+  BlogCommunityHomeResponse,
 } from "@/types/blog";
+
+export async function getBlogCommunityHome(): Promise<BlogCommunityHomeResponse> {
+  return getJson<BlogCommunityHomeResponse>("/api/blogs/community-home", { cache:"no-store" });
+}
 
 const API_URL = (
   process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000"

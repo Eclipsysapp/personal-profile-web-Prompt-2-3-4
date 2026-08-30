@@ -5,12 +5,16 @@ export type Blog = {
   category: string | null;
   category_slug: string | null;
   excerpt: string | null;
+  post_type: "text" | "image" | "video";
+  background_color: string | null;
   featured_image: string | null;
   featured_image_alt: string;
   tags: string[];
   is_featured: boolean;
   published_at: string | null;
   updated_at: string | null;
+  comments_count: number;
+  author: { id:number; name:string; avatar_url:string|null; bio:string|null } | null;
   relative_url: string;
   seo_url: string;
   canonical_url: string;
@@ -19,6 +23,8 @@ export type Blog = {
   is_indexable: boolean;
   content?: string;
 };
+
+export type BlogCommunityHomeResponse = { featured:Blog[]; latest:Blog[]; most_commented:Blog[]; discover:Blog|null; categories:BlogCategory[]; popular_tags:Array<{name:string;count:number}> };
 
 export type BlogCategory = {
   name: string;

@@ -343,6 +343,40 @@
   aspect-ratio: 16 / 9;
 }
 
+.gos-content .blog-video-embed {
+  width: 100%;
+  margin: 32px 0;
+  aspect-ratio: 16 / 9;
+}
+
+.gos-content .blog-video-embed iframe {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.gos-content .blog-social-embed {
+  margin: 28px 0;
+  border: 1px solid var(--gos-border);
+  border-left: 4px solid var(--gos-primary);
+  border-radius: 4px;
+  background: #f8faf9;
+}
+
+.gos-content .blog-social-embed a {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+  padding: 20px 22px;
+  text-decoration: none;
+}
+
+.gos-content .blog-social-embed strong { color: #222; font-size: 15px; }
+.gos-content .blog-social-embed span { min-width: 0; color: #777; font-size: 13px; overflow-wrap: anywhere; }
+.gos-content .blog-social-embed em { color: var(--gos-primary); font-size: 12px; font-style: normal; font-weight: 700; }
+.geeky-dark .gos-content .blog-social-embed { background: #171717; }
+.geeky-dark .gos-content .blog-social-embed strong { color: #eee; }
+
 .gos-tags {
   display: flex;
   flex-wrap: wrap;

@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { BlogFooter } from "@/components/blog/BlogFooter";
 import { BlogHeader } from "@/components/blog/BlogHeader";
+import { BlogAuthorProvider } from "@/components/blog/BlogAuthorProvider";
 import { getBlogSite } from "@/lib/blog-api";
 import type { BlogSite } from "@/types/blog";
 import "./blog.css";
+import "../admin/blogs/admin-blogs.css";
+import "./community.css";
 
 const fallbackSite: BlogSite = {
   full_name: "Anil Bhimani",
@@ -41,9 +44,11 @@ export default async function BlogLayout({
 
   return (
     <div className="geeky-shell">
-      <BlogHeader site={site} />
-      <main>{children}</main>
-      <BlogFooter site={site} />
+      <BlogAuthorProvider>
+        <BlogHeader site={site} />
+        <main>{children}</main>
+        <BlogFooter site={site} />
+      </BlogAuthorProvider>
     </div>
   );
 }

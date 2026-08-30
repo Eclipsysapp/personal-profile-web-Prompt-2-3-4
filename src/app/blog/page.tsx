@@ -1,114 +1,12 @@
-import { BlogSidebar } from "@/components/blog/BlogSidebar";
-import { FeaturedPosts } from "@/components/blog/FeaturedPosts";
-import { GeekyHero } from "@/components/blog/GeekyHero";
-import { PostCard } from "@/components/blog/PostCard";
-import {
-  getBlogCategories,
-  getBlogs,
-  getBlogSite,
-  getFeaturedBlogs,
-} from "@/lib/blog-api";
-import type {
-  Blog,
-  BlogCategory,
-  BlogSite,
-} from "@/types/blog";
+import type { Metadata } from "next";
+import Link from "next/link";
+import Image from "next/image";
+import { getBlogCommunityHome } from "@/lib/blog-api";
+import type { Blog } from "@/types/blog";
 
-export const dynamic = "force-dynamic";
-
-const fallbackSite: BlogSite = {
-  full_name: "Anil Bhimani",
-  professional_title: null,
-  short_intro:
-    "Ideas, technology, business observations and practical perspectives.",
-  welcome_message: null,
-  website_title: null,
-  profile_image: null,
-  social_links: {},
-};
-
-export default async function BlogPage() {
-  let featured: Blog[] = [];
-  let latest: Blog[] = [];
-  let categories: BlogCategory[] = [];
-  let site = fallbackSite;
-  let apiUnavailable = false;
-
-  try {
-    const [
-      siteResponse,
-      featuredResponse,
-      latestResponse,
-      categoriesResponse,
-    ] = await Promise.all([
-      getBlogSite(),
-      getFeaturedBlogs(5),
-      getBlogs(1, 8),
-      getBlogCategories(),
-    ]);
-
-    site = siteResponse.site;
-    featured = featuredResponse.blogs;
-    latest = latestResponse.blogs;
-    categories = categoriesResponse.categories;
-
-    if (!featured.length) {
-      featured = latest.slice(0, 5);
-    }
-  } catch {
-    apiUnavailable = true;
-  }
-
-  return (
-    <>
-      <GeekyHero site={site} />
-
-      <section className="geeky-main-section">
-        <div className="geeky-container">
-          {apiUnavailable ? (
-            <div className="geeky-api-notice">
-              Blog API is temporarily unavailable. Start Laravel and
-              refresh this page.
-            </div>
-          ) : null}
-
-          <div className="geeky-content-grid">
-            <div className="geeky-main-column">
-              <FeaturedPosts blogs={featured} />
-
-              <section className="geeky-recent-section">
-                <h2 className="geeky-section-title">
-                  Recent Posts
-                </h2>
-
-                <div className="geeky-recent-box">
-                  {latest.length ? (
-                    <div className="geeky-post-grid">
-                      {latest.map((blog) => (
-                        <PostCard blog={blog} key={blog.id} />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="geeky-empty-posts">
-                      <h3>Your blog is ready.</h3>
-                      <p>
-                        Publish a public article from Admin Blog
-                        Manager and it will appear here
-                        automatically.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </section>
-            </div>
-
-            <BlogSidebar
-              categories={categories}
-              recent={latest}
-            />
-          </div>
-        </div>
-      </section>
-    </>
-  );
-}
+export const dynamic="force-dynamic";
+export const metadata:Metadata={title:"Blog",description:"Independent ideas and useful perspectives from the Geeky blog community.",alternates:{canonical:"/blog"},openGraph:{title:"Geeky Blog Community",description:"Independent ideas and useful perspectives from our writers.",type:"website",url:"/blog"}};
+function ImageBox({blog}:{blog:Blog}){return <div className="community-post-image" style={!blog.featured_image&&blog.background_color?{backgroundColor:blog.background_color}:undefined}>{blog.featured_image?<Image unoptimized src={blog.featured_image} alt={blog.featured_image_alt||blog.title} fill sizes="(max-width: 768px) 100vw, 33vw"/>:<span>{blog.title.charAt(0)}</span>}{blog.post_type==="video"?<i>▶</i>:null}</div>}
+function Meta({blog}:{blog:Blog}){return <p className="community-post-meta"><span>{blog.author?.name??"Anil Bhimani"}</span><time>{blog.published_at?new Date(blog.published_at).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}):""}</time>{blog.comments_count>0?<b>{blog.comments_count} comment{blog.comments_count===1?"":"s"}</b>:null}</p>}
+export default async function BlogPage(){let data;try{data=await getBlogCommunityHome();}catch{return <section className="blog-community-page"><div className="geeky-api-notice">Blog API is temporarily unavailable.</div></section>}
+return <div className="community-home"><section className="community-hero-grid">{data.featured.map((blog,index)=><article className={index===0?"is-lead":""} key={blog.id}><Link href={`/blog/${blog.slug}`}><ImageBox blog={blog}/><div className="community-hero-copy"><small>{blog.category}</small><h2>{blog.title}</h2><Meta blog={blog}/></div></Link></article>)}</section><section className="community-feed-wrap"><div className="community-latest"><div className="community-section-heading"><p>Fresh perspectives</p><h1>Latest Articles</h1></div>{data.latest.map(blog=><article className="community-feed-row" key={blog.id}><Link href={`/blog/${blog.slug}`}><ImageBox blog={blog}/></Link><div><small>{blog.category}</small><h2><Link href={`/blog/${blog.slug}`}>{blog.title}</Link></h2><Meta blog={blog}/><p>{blog.excerpt}</p><Link className="community-read" href={`/blog/${blog.slug}`}>Read article</Link></div></article>)}</div><aside className="community-home-sidebar"><section><h2>Featured & Discussed</h2>{data.most_commented.map(blog=><Link className="community-mini-post" href={`/blog/${blog.slug}`} key={blog.id}><strong>{blog.title}</strong><span>{blog.comments_count?`${blog.comments_count} comments`:"Featured article"}</span></Link>)}</section><section id="categories"><h2>Categories</h2><div className="community-category-list">{data.categories.map(category=><Link href={`/blog/category/${category.slug}`} key={category.slug}><span>{category.name}</span><b>{category.article_count}</b></Link>)}</div></section>{data.discover?<section><h2>Discover</h2><Link className="community-discover" href={`/blog/${data.discover.slug}`}><ImageBox blog={data.discover}/><strong>{data.discover.title}</strong></Link></section>:null}<section><h2>Popular Tags</h2><div className="community-tags">{data.popular_tags.map(tag=><Link href={`/blog/search?q=${encodeURIComponent(tag.name)}`} key={tag.name}>#{tag.name} <small>{tag.count}</small></Link>)}</div></section></aside></section></div>}

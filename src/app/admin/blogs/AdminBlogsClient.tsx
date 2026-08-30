@@ -8,6 +8,14 @@ import {
   useMemo,
   useState,
 } from "react";
+import Image from "next/image";
+import ArticleBlockBuilder, {
+  ArticleBlock,
+  emptyBlock,
+  parseBlockContent,
+  serializeBlocks,
+} from "./ArticleBlockBuilder";
+import "./admin-blogs.css";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ??
@@ -17,7 +25,17 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??
   "https://anilbhimani.com";
 
-type BlogStatus = "draft" | "published" | "archived";
+const backgroundColors = [
+  { label: "Default", value: "" },
+  { label: "Blue", value: "#dbeafe" },
+  { label: "Gray", value: "#e5e7eb" },
+  { label: "Red", value: "#fee2e2" },
+  { label: "Yellow", value: "#fef3c7" },
+  { label: "Cyan", value: "#cffafe" },
+  { label: "Dark", value: "#27272a" },
+];
+
+type BlogStatus = "draft" | "pending_review" | "published" | "rejected" | "archived";
 type BlogVisibility = "private" | "public";
 
 type Blog = {
@@ -27,7 +45,11 @@ type Blog = {
   category: string | null;
   excerpt: string | null;
   content: string | null;
+  content_blocks?: { version: 1; blocks: ArticleBlock[] } | null;
+  post_type?: "text" | "image" | "video";
+  background_color?: string | null;
   featured_image: string | null;
+  featured_image_alt?: string | null;
   tags: string[];
   status: BlogStatus;
   visibility: BlogVisibility;
@@ -41,12 +63,16 @@ type Blog = {
   updated_at?: string | null;
 };
 
+type CommunitySubmission = { id:number; title:string; slug:string; category:string|null; post_type:string; status:string; submitted_at:string|null; moderation_feedback:string|null; author_id:number; display_name:string|null; author_name:string; avatar_url:string|null; is_blocked:boolean };
+
 type BlogForm = {
   title: string;
   slug: string;
   category: string;
   excerpt: string;
   content: string;
+  post_type: "text" | "image" | "video";
+  background_color: string;
   featured_image: string;
   featured_image_alt: string;
   tags: string;
@@ -64,6 +90,8 @@ const emptyForm: BlogForm = {
   category: "",
   excerpt: "",
   content: "",
+  post_type: "text",
+  background_color: "",
   featured_image: "",
   featured_image_alt: "",
   tags: "",
@@ -129,8 +157,14 @@ export default function AdminBlogsClient() {
     useState("");
 
   const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [communitySubmissions, setCommunitySubmissions] = useState<CommunitySubmission[]>([]);
+  const [submissionPreview, setSubmissionPreview] = useState<{title:string;category:string|null;excerpt:string|null;content:string;featured_image:string|null;featured_image_alt:string|null;display_name:string|null;author_name:string}|null>(null);
   const [form, setForm] =
     useState<BlogForm>(emptyForm);
+  const [articleBlocks, setArticleBlocks] =
+    useState<ArticleBlock[]>(() => [emptyBlock("paragraph")]);
+  const [legacyMode, setLegacyMode] = useState(false);
+  const [legacyContent, setLegacyContent] = useState("");
 
   const [editingId, setEditingId] =
     useState<number | null>(null);
@@ -269,6 +303,8 @@ export default function AdminBlogsClient() {
         [];
 
       setBlogs(raw as Blog[]);
+      const communityData = await authorizedFetch("/api/admin/community-blogs");
+      setCommunitySubmissions(Array.isArray(communityData.submissions) ? communityData.submissions as CommunitySubmission[] : []);
     } catch (requestError) {
       const text =
         requestError instanceof Error
@@ -370,6 +406,9 @@ export default function AdminBlogsClient() {
     setBlogs([]);
     setEditingId(null);
     setForm(emptyForm);
+    setArticleBlocks([emptyBlock("paragraph")]);
+    setLegacyMode(false);
+    setLegacyContent("");
     setSelectedImageName("");
     setMessage("");
     setError("");
@@ -418,6 +457,9 @@ export default function AdminBlogsClient() {
   function startCreate() {
     setEditingId(null);
     setForm(emptyForm);
+    setArticleBlocks([emptyBlock("paragraph")]);
+    setLegacyMode(false);
+    setLegacyContent("");
     setSelectedImageName("");
     setMessage("");
     setError("");
@@ -430,6 +472,10 @@ export default function AdminBlogsClient() {
 
   function startEdit(blog: Blog) {
     setEditingId(blog.id);
+    const parsedContent = parseBlockContent(blog.content_blocks, blog.content ?? "");
+    setArticleBlocks(parsedContent.blocks);
+    setLegacyMode(parsedContent.legacy);
+    setLegacyContent(parsedContent.legacy ? blog.content ?? "" : "");
 
     setForm({
       title: blog.title ?? "",
@@ -437,16 +483,13 @@ export default function AdminBlogsClient() {
       category: blog.category ?? "",
       excerpt: blog.excerpt ?? "",
       content: blog.content ?? "",
+      post_type: blog.post_type ?? "text",
+      background_color: blog.background_color ?? "",
       featured_image:
         blog.featured_image ?? "",
 
-      /*
-       * Alt text is not stored in the blogs
-       * table yet, so title is a safe SEO
-       * default for the UI.
-       */
       featured_image_alt:
-        blog.title ?? "",
+        blog.featured_image_alt ?? blog.title ?? "",
 
       tags: Array.isArray(blog.tags)
         ? blog.tags.join(", ")
@@ -605,6 +648,18 @@ if (!imageUrl) {
     setError("");
   }
 
+  async function uploadArticleImage(file: File): Promise<string> {
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(file.type)) throw new Error("Please choose a JPG, PNG or WebP image.");
+    if (file.size > 5 * 1024 * 1024) throw new Error("Article image must be 5 MB or smaller.");
+    const uploadData = new FormData();
+    uploadData.append("image", file);
+    const data = await authorizedFetch("/api/admin/blogs/media/article-image", { method: "POST", body: uploadData });
+    const image = data.image && typeof data.image === "object" ? data.image as Record<string, unknown> : null;
+    if (!image || typeof image.url !== "string") throw new Error("Upload completed but image URL was not returned.");
+    return image.url;
+  }
+
   async function saveBlog(
     event: FormEvent<HTMLFormElement>
   ) {
@@ -615,7 +670,15 @@ if (!imageUrl) {
       return;
     }
 
-    if (!form.content.trim()) {
+    const articleContent = legacyMode
+      ? legacyContent
+      : serializeBlocks(articleBlocks);
+
+    const hasVisibleBlockContent = articleBlocks.some(
+      (block) => block.text.trim() || block.url?.trim()
+    );
+
+    if (!(legacyMode ? legacyContent.trim() : hasVisibleBlockContent)) {
       setError("Blog content is required.");
       return;
     }
@@ -657,10 +720,18 @@ if (!imageUrl) {
         excerpt:
           form.excerpt.trim() || null,
 
-        content: form.content,
+        content: articleContent,
+        content_blocks: legacyMode
+          ? null
+          : { version: 1, blocks: articleBlocks },
+        post_type: form.post_type,
+        background_color: form.background_color || null,
 
         featured_image:
           form.featured_image.trim() || null,
+
+        featured_image_alt:
+          form.featured_image_alt.trim() || null,
 
         tags: normalizeTags(form.tags),
 
@@ -713,6 +784,9 @@ if (!imageUrl) {
 
       setEditingId(null);
       setForm(emptyForm);
+      setArticleBlocks([emptyBlock("paragraph")]);
+      setLegacyMode(false);
+      setLegacyContent("");
       setSelectedImageName("");
 
       await loadBlogs();
@@ -748,6 +822,9 @@ if (!imageUrl) {
       if (editingId === blog.id) {
         setEditingId(null);
         setForm(emptyForm);
+        setArticleBlocks([emptyBlock("paragraph")]);
+        setLegacyMode(false);
+        setLegacyContent("");
         setSelectedImageName("");
       }
 
@@ -765,11 +842,29 @@ if (!imageUrl) {
     }
   }
 
+  async function moderateSubmission(id:number, action:"approve"|"reject") {
+    const feedback = action === "reject" ? window.prompt("Give the author clear moderation feedback:") : null;
+    if (action === "reject" && !feedback?.trim()) return;
+    try { await authorizedFetch(`/api/admin/community-blogs/${id}/${action}`, { method:"POST", body:action==="reject"?JSON.stringify({feedback:feedback?.trim()}):undefined }); setMessage(action==="approve"?"Community submission published.":"Community submission rejected."); await loadBlogs(); }
+    catch (requestError) { setError(requestError instanceof Error ? requestError.message : "Moderation failed."); }
+  }
+
+  async function blockCommunityAuthor(authorId:number) {
+    if(!window.confirm("Block this author from creating or submitting blog posts?")) return;
+    try { await authorizedFetch(`/api/admin/blog-authors/${authorId}/block`,{method:"POST"}); setMessage("Community author blocked."); await loadBlogs(); }
+    catch(requestError){setError(requestError instanceof Error?requestError.message:"Unable to block author.");}
+  }
+
+  async function previewCommunitySubmission(id:number) {
+    try { const data=await authorizedFetch(`/api/admin/community-blogs/${id}`); setSubmissionPreview(data.blog as typeof submissionPreview); }
+    catch(requestError){setError(requestError instanceof Error?requestError.message:"Unable to load preview.");}
+  }
+
   if (!adminToken) {
     return (
-      <main className="min-h-screen bg-zinc-50 px-4 py-16 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
-        <div className="mx-auto max-w-md">
-          <div className="mb-8">
+      <main className="admin-blog-shell admin-login-shell min-h-screen bg-zinc-50 px-4 py-16 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
+        <div className="admin-login-wrap mx-auto max-w-md">
+          <div className="admin-login-heading mb-8">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
               Administration
             </p>
@@ -786,7 +881,7 @@ if (!imageUrl) {
 
           <form
             onSubmit={handleLogin}
-            className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+            className="admin-login-card rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
           >
             <label className="mb-5 block">
               <FieldLabel>Email</FieldLabel>
@@ -831,7 +926,7 @@ if (!imageUrl) {
             <button
               type="submit"
               disabled={loginLoading}
-              className="w-full rounded-xl bg-zinc-950 px-5 py-3 font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200"
+              className="admin-primary-button w-full rounded-xl bg-zinc-950 px-5 py-3 font-medium text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200"
             >
               {loginLoading
                 ? "Signing in..."
@@ -844,32 +939,35 @@ if (!imageUrl) {
   }
 
   return (
-    <main className="min-h-screen bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
-      <header className="border-b border-zinc-200 bg-white/90 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5">
-          <div>
+    <main className="admin-blog-shell min-h-screen bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
+      <header className="admin-blog-header border-b border-zinc-200 bg-white/90 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90">
+        <div className="admin-blog-header-inner mx-auto flex max-w-7xl items-center justify-between px-5 py-5">
+          <div className="admin-brand">
+            <span className="admin-brand-mark" aria-hidden="true">G</span>
+            <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
               Admin
             </p>
 
             <h1 className="mt-1 text-xl font-semibold">
-              Blogs
+              Blog Manager
             </h1>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="admin-header-actions flex items-center gap-3">
             <button
               type="button"
               onClick={startCreate}
-              className="rounded-xl bg-zinc-950 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200"
+              className="admin-primary-button rounded-xl bg-zinc-950 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200"
             >
-              New blog
+              New Blog
             </button>
 
             <button
               type="button"
               onClick={logout}
-              className="rounded-xl border border-zinc-300 px-4 py-2.5 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-900"
+              className="admin-outline-button rounded-xl border border-zinc-300 px-4 py-2.5 text-sm font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-900"
             >
               Sign out
             </button>
@@ -877,13 +975,13 @@ if (!imageUrl) {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-7xl gap-8 px-5 py-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(340px,0.75fr)]">
+      <div className="admin-blog-workspace mx-auto grid max-w-7xl gap-8 px-5 py-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(340px,0.75fr)]">
         <section>
           <form
             onSubmit={saveBlog}
-            className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+            className="admin-editor-form"
           >
-            <div className="border-b border-zinc-200 p-6 dark:border-zinc-800">
+            <div className="admin-editor-heading border-b border-zinc-200 p-6 dark:border-zinc-800">
               <p className="text-sm text-zinc-500">
                 {editingBlog
                   ? `Editing #${editingBlog.id}`
@@ -897,7 +995,9 @@ if (!imageUrl) {
               </h2>
             </div>
 
-            <div className="space-y-8 p-6">
+            <div className="admin-editor-grid">
+              <section className="admin-editor-card admin-article-card">
+                <SectionHeading eyebrow="Editorial content">Article</SectionHeading>
               <div className="grid gap-5 md:grid-cols-2">
                 <label className="md:col-span-2">
                   <FieldLabel>Title</FieldLabel>
@@ -910,7 +1010,7 @@ if (!imageUrl) {
                       )
                     }
                     required
-                    className={inputClass}
+                    className={`${inputClass} admin-title-input`}
                     placeholder="A clear, useful article title"
                   />
                 </label>
@@ -964,10 +1064,31 @@ if (!imageUrl) {
                     placeholder="Technology"
                   />
                 </label>
+
+                <label>
+                  <FieldLabel>Post type</FieldLabel>
+                  <select value={form.post_type} onChange={(event) => updateForm("post_type", event.target.value as BlogForm["post_type"])} className={inputClass}>
+                    <option value="image">Image Post</option>
+                    <option value="video">Video Post</option>
+                    <option value="text">Text Post</option>
+                  </select>
+                </label>
+
+                <label>
+                  <FieldLabel>Background color</FieldLabel>
+                  <div className="admin-color-palette" role="group" aria-label="Background color chooser">
+                    {backgroundColors.map((color) => (
+                      <button key={color.label} type="button" className={form.background_color === color.value ? "is-active" : ""} onClick={() => updateForm("background_color", color.value)} aria-label={`${color.label} background`} title={color.label}>
+                        <span style={{ backgroundColor: color.value || "transparent" }} />
+                        {color.label}
+                      </button>
+                    ))}
+                  </div>
+                </label>
               </div>
 
               <div>
-                <FieldLabel>Excerpt</FieldLabel>
+                <FieldLabel>Description / Excerpt</FieldLabel>
 
                 <textarea
                   value={form.excerpt}
@@ -988,34 +1109,42 @@ if (!imageUrl) {
                 />
               </div>
 
-              <div>
+              <div className="admin-builder-field">
                 <FieldLabel>
                   Article content
                 </FieldLabel>
-
-                <textarea
-                  value={form.content}
-                  onChange={(event) =>
-                    updateForm(
-                      "content",
-                      event.target.value
-                    )
-                  }
-                  rows={18}
-                  required
-                  className={`${inputClass} font-mono text-sm leading-7`}
-                  placeholder="Write article content here..."
+                <ArticleBlockBuilder
+                  blocks={articleBlocks}
+                  onChange={setArticleBlocks}
+                  legacyContent={legacyContent}
+                  legacyMode={legacyMode}
+                  onLegacyChange={setLegacyContent}
+                  onConvertLegacy={() => {
+                    if (!window.confirm("Start a new block article? Your legacy content remains unchanged until you save.")) return;
+                    setLegacyMode(false);
+                    setArticleBlocks([emptyBlock("paragraph")]);
+                  }}
+                  onUploadImage={uploadArticleImage}
                 />
-
-                <p className="mt-2 text-xs text-zinc-500">
-                  Rich text / Markdown editor can
-                  be added later.
-                </p>
               </div>
 
+              <div className="admin-tags-field">
+                <FieldLabel>Tags</FieldLabel>
+                <input
+                  value={form.tags}
+                  onChange={(event) => updateForm("tags", event.target.value)}
+                  className={inputClass}
+                  placeholder="nextjs, seo, web development"
+                />
+                <p className="admin-field-helper">Separate tags with commas.</p>
+                <TagChips value={form.tags} />
+              </div>
+
+              </section>
+
               {/* Featured image */}
-              <div className="border-t border-zinc-200 pt-8 dark:border-zinc-800">
-                <div className="mb-5">
+              <section className="admin-editor-card admin-media-card">
+                <div className="admin-media-heading mb-5">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
                     Media
                   </p>
@@ -1031,7 +1160,7 @@ if (!imageUrl) {
                 </div>
 
                 {form.featured_image ? (
-                  <div className="overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-700">
+                  <div className="admin-featured-preview overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-700">
                     <div className="relative aspect-[16/9] bg-zinc-100 dark:bg-zinc-950">
                       {/* Standard img is intentional
                           for admin preview because the
@@ -1097,7 +1226,7 @@ if (!imageUrl) {
                   </div>
                 ) : (
                   <label
-                    className={`flex min-h-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-300 bg-zinc-50 px-6 py-10 text-center transition hover:border-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-950 dark:hover:border-zinc-500 dark:hover:bg-zinc-900 ${
+                    className={`admin-featured-upload flex min-h-48 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-300 bg-zinc-50 px-6 py-10 text-center transition hover:border-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-950 dark:hover:border-zinc-500 dark:hover:bg-zinc-900 ${
                       imageUploading
                         ? "pointer-events-none opacity-60"
                         : ""
@@ -1132,7 +1261,7 @@ if (!imageUrl) {
                   </label>
                 )}
 
-                <div className="mt-5">
+                <div className="admin-media-details mt-5">
                   <FieldLabel>
                     Image alt text
                   </FieldLabel>
@@ -1160,29 +1289,21 @@ if (!imageUrl) {
                     is used as the default.
                   </p>
                 </div>
-              </div>
+              </section>
 
-              <div>
-                <FieldLabel>Tags</FieldLabel>
+              <aside className="admin-sidebar-stack">
+              <section className="admin-editor-card admin-metadata-card">
+                <SectionHeading eyebrow="Classification">Metadata</SectionHeading>
+                <dl className="admin-metadata-summary">
+                  <div><dt>Category</dt><dd>{form.category.trim() || "Uncategorized"}</dd></div>
+                  <div><dt>Slug</dt><dd>{form.slug.trim() || toSlug(form.title) || "article-slug"}</dd></div>
+                  <div><dt>Post type</dt><dd>{form.post_type}</dd></div>
+                  <div><dt>Background</dt><dd>{backgroundColors.find((color) => color.value === form.background_color)?.label ?? form.background_color}</dd></div>
+                </dl>
+                <div className="admin-metadata-tags"><span>Tags</span><TagChips value={form.tags} /></div>
+              </section>
 
-                <input
-                  value={form.tags}
-                  onChange={(event) =>
-                    updateForm(
-                      "tags",
-                      event.target.value
-                    )
-                  }
-                  className={inputClass}
-                  placeholder="nextjs, seo, web"
-                />
-
-                <p className="mt-2 text-xs text-zinc-500">
-                  Separate tags with commas.
-                </p>
-              </div>
-
-              <div className="border-t border-zinc-200 pt-8 dark:border-zinc-800">
+              <section className="admin-editor-card admin-publish-card">
                 <div className="mb-5">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
                     Publishing
@@ -1217,6 +1338,9 @@ if (!imageUrl) {
                       <option value="published">
                         Published
                       </option>
+
+                      <option value="pending_review">Pending Review</option>
+                      <option value="rejected">Rejected</option>
 
                       <option value="archived">
                         Archived
@@ -1270,7 +1394,7 @@ if (!imageUrl) {
                     />
                   </label>
 
-                  <label className="flex items-center gap-3 rounded-xl border border-zinc-200 px-4 py-3 dark:border-zinc-700">
+                  <label className="admin-featured-toggle flex items-center gap-3">
                     <input
                       type="checkbox"
                       checked={
@@ -1297,9 +1421,28 @@ if (!imageUrl) {
                     </span>
                   </label>
                 </div>
-              </div>
+                <div className="admin-publish-actions">
+                  <button type="submit" disabled={saving || imageUploading} className="admin-primary-button">
+                    {saving ? "Saving..." : imageUploading ? "Uploading image..." : editingId ? "Update Article" : "Create Article"}
+                  </button>
+                  <button type="button" onClick={startCreate} disabled={saving || imageUploading} className="admin-outline-button">
+                    {editingId ? "Cancel Edit" : "Reset / New Article"}
+                  </button>
+                </div>
+              </section>
 
-              <div className="border-t border-zinc-200 pt-8 dark:border-zinc-800">
+              <section className="admin-editor-card admin-state-card">
+                <SectionHeading eyebrow="Editing state">{editingBlog ? `Editing #${editingBlog.id}` : "New Article"}</SectionHeading>
+                <p>{editingBlog?.title || form.title || "Untitled article"}</p>
+                <dl className="admin-state-list">
+                  <div><dt>Status</dt><dd>{form.status}</dd></div>
+                  <div><dt>Visibility</dt><dd>{form.visibility}</dd></div>
+                  <div><dt>Featured</dt><dd>{form.is_featured ? "Yes" : "No"}</dd></div>
+                </dl>
+              </section>
+              </aside>
+
+              <section className="admin-editor-card admin-seo-card">
                 <div className="mb-5">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-500">
                     Search optimization
@@ -1376,7 +1519,7 @@ if (!imageUrl) {
                     form={form}
                   />
                 </div>
-              </div>
+              </section>
 
               {error && (
                 <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
@@ -1390,42 +1533,17 @@ if (!imageUrl) {
                 </div>
               )}
             </div>
-
-            <div className="flex flex-wrap items-center gap-3 border-t border-zinc-200 bg-zinc-50 px-6 py-5 dark:border-zinc-800 dark:bg-zinc-950/50">
-              <button
-                type="submit"
-                disabled={
-                  saving || imageUploading
-                }
-                className="rounded-xl bg-zinc-950 px-5 py-3 text-sm font-medium text-white hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200"
-              >
-                {saving
-                  ? "Saving..."
-                  : imageUploading
-                    ? "Uploading image..."
-                    : editingId
-                      ? "Update article"
-                      : "Create article"}
-              </button>
-
-              {editingId && (
-                <button
-                  type="button"
-                  onClick={startCreate}
-                  disabled={
-                    saving || imageUploading
-                  }
-                  className="rounded-xl border border-zinc-300 px-5 py-3 text-sm font-medium hover:bg-zinc-100 disabled:opacity-50 dark:border-zinc-700 dark:hover:bg-zinc-900"
-                >
-                  Cancel edit
-                </button>
-              )}
-            </div>
           </form>
         </section>
 
-        <aside>
-          <div className="sticky top-6 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <section className="admin-community-panel">
+          <div className="admin-community-heading"><div><p>Community publishing</p><h2>Author submissions</h2></div><span>{communitySubmissions.filter(item=>item.status==="pending_review").length} awaiting review</span></div>
+          <div className="admin-community-list">{communitySubmissions.map(item=><article key={item.id}><div><small>{item.category} · {item.post_type}</small><h3>{item.title}</h3><p>By {item.display_name||item.author_name} · {item.status.replaceAll("_"," ")}</p>{item.moderation_feedback?<blockquote>{item.moderation_feedback}</blockquote>:null}</div><div><button type="button" onClick={()=>void previewCommunitySubmission(item.id)}>Preview</button>{item.status==="pending_review"?<><button type="button" onClick={()=>void moderateSubmission(item.id,"approve")}>Approve</button><button type="button" className="is-reject" onClick={()=>void moderateSubmission(item.id,"reject")}>Reject</button></>:null}{!item.is_blocked?<button type="button" className="is-block" onClick={()=>void blockCommunityAuthor(item.author_id)}>Block author</button>:<span>Author blocked</span>}</div></article>)}{!communitySubmissions.length?<p className="admin-community-empty">No community submissions yet.</p>:null}</div>
+          {submissionPreview?<div className="admin-submission-overlay" role="dialog" aria-modal="true"><div className="admin-submission-preview"><button type="button" onClick={()=>setSubmissionPreview(null)} aria-label="Close preview">×</button><small>{submissionPreview.category} · By {submissionPreview.display_name||submissionPreview.author_name}</small><h2>{submissionPreview.title}</h2>{submissionPreview.featured_image?<Image unoptimized src={submissionPreview.featured_image} alt={submissionPreview.featured_image_alt||submissionPreview.title} width={900} height={500}/>:null}{submissionPreview.excerpt?<p>{submissionPreview.excerpt}</p>:null}<div className="gos-content" dangerouslySetInnerHTML={{__html:submissionPreview.content}}/></div></div>:null}
+        </section>
+
+        <aside className="admin-articles-panel">
+          <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
             <div className="flex items-center justify-between border-b border-zinc-200 p-5 dark:border-zinc-800">
               <div>
                 <h2 className="font-semibold">
@@ -1451,7 +1569,7 @@ if (!imageUrl) {
               </button>
             </div>
 
-            <div className="max-h-[calc(100vh-170px)] overflow-y-auto">
+            <div className="admin-article-list">
               {!loading &&
                 blogs.length === 0 && (
                   <div className="p-8 text-center text-sm text-zinc-500">
@@ -1493,6 +1611,12 @@ if (!imageUrl) {
                         Featured
                       </span>
                     )}
+
+                    {blog.category && (
+                      <span className="admin-category-badge">
+                        {blog.category}
+                      </span>
+                    )}
                   </div>
 
                   <h3 className="line-clamp-2 font-semibold leading-6">
@@ -1503,14 +1627,19 @@ if (!imageUrl) {
                     /blog/{blog.slug}
                   </p>
 
-                  <p className="mt-3 text-xs text-zinc-500">
-                    Updated{" "}
-                    {formatDate(
-                      blog.updated_at
-                    )}
+                  <p className="admin-article-date mt-3 text-xs text-zinc-500">
+                    {blog.published_at
+                      ? `Published ${formatDate(blog.published_at)} · `
+                      : ""}
+                    Updated {formatDate(blog.updated_at)}
                   </p>
 
                   <div className="mt-4 flex gap-3">
+                    {blog.status === "published" && blog.visibility === "public" ? (
+                      <a href={`${SITE_URL.replace(/\/$/, "")}/blog/${blog.slug}`} target="_blank" rel="noopener noreferrer" className="text-sm font-medium underline-offset-4 hover:underline">
+                        View
+                      </a>
+                    ) : null}
                     <button
                       type="button"
                       onClick={() =>
@@ -1553,6 +1682,21 @@ function FieldLabel({
   );
 }
 
+function SectionHeading({
+  children,
+  eyebrow,
+}: {
+  children: React.ReactNode;
+  eyebrow: string;
+}) {
+  return (
+    <div className="admin-section-heading">
+      <p>{eyebrow}</p>
+      <h3>{children}</h3>
+    </div>
+  );
+}
+
 function CharCount({
   value,
   recommended,
@@ -1561,19 +1705,23 @@ function CharCount({
   recommended: number;
 }) {
   const count = value.length;
+  const state = count === 0
+    ? "is-neutral"
+    : count <= recommended
+      ? "is-good"
+      : "is-long";
 
   return (
-    <p
-      className={`mt-2 text-xs ${
-        count > recommended
-          ? "text-amber-600 dark:text-amber-400"
-          : "text-zinc-500"
-      }`}
-    >
-      {count} characters · recommended around{" "}
-      {recommended}
+    <p className={`admin-char-count ${state}`}>
+      {count} / {recommended} recommended
     </p>
   );
+}
+
+function TagChips({ value }: { value: string }) {
+  const tags = normalizeTags(value);
+  if (!tags.length) return <p className="admin-tags-empty">No tags added yet.</p>;
+  return <div className="admin-tag-chips" aria-label="Article tags">{tags.map((tag, index) => <span key={`${tag}-${index}`}>{tag}</span>)}</div>;
 }
 
 function SearchPreview({
@@ -1597,7 +1745,7 @@ function SearchPreview({
     "article-slug";
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-700 dark:bg-zinc-950">
+    <div className="admin-search-preview rounded-2xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-700 dark:bg-zinc-950">
       <p className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
         Search preview
       </p>

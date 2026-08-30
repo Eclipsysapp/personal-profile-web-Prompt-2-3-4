@@ -84,7 +84,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
     "@context": "https://schema.org", "@type": "BlogPosting", headline: blog.title,
     description: blog.effective_seo_description, url: blog.canonical_url, mainEntityOfPage: blog.canonical_url,
     datePublished: blog.published_at, dateModified: blog.updated_at ?? blog.published_at,
-    author: { "@type": "Person", name: site.full_name }, publisher: { "@type": "Person", name: site.full_name },
+    author: { "@type": "Person", name: blog.author?.name ?? site.full_name }, publisher: { "@type": "Person", name: site.full_name },
     image: blog.featured_image ? [blog.featured_image] : undefined, keywords: blog.tags.join(", "), articleSection: blog.category ?? undefined,
   };
 
@@ -95,13 +95,13 @@ export default async function BlogArticlePage({ params }: PageProps) {
         <div className="gos-row">
           <main className="gos-main">
             <article>
-              <div className="gos-cover">
+              <div className="gos-cover" style={!blog.featured_image && blog.background_color ? { backgroundColor: blog.background_color } : undefined}>
                 {blog.featured_image ? <img src={blog.featured_image} alt={blog.featured_image_alt || blog.title} width={1000} height={500} /> : null}
                 {blog.category && blog.category_slug ? <ul className="gos-category-list"><li><Link href={`/blog/category/${blog.category_slug}`}>{blog.category}</Link></li></ul> : null}
               </div>
               <h1 className="gos-title">{blog.title}</h1>
               <ul className="gos-meta">
-                <li><span aria-hidden="true">♟</span><span>{site.full_name}</span></li>
+                <li><span aria-hidden="true">♟</span><span>{blog.author?.name ?? site.full_name}</span></li>
                 {blog.published_at ? <li><span aria-hidden="true">▣</span><time dateTime={blog.published_at}>{formatDate(blog.published_at)}</time></li> : null}
               </ul>
               {blog.excerpt ? <p className="gos-lead">{blog.excerpt}</p> : null}
