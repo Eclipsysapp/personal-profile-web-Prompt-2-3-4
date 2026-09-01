@@ -292,8 +292,31 @@
   margin-top: 42px;
 }
 
+.bhome-featured-media {
+  position: relative;
+  display: block;
+}
+
 .bhome-featured .bh-thumb {
   aspect-ratio: 16 / 11;
+}
+
+.bhome-feed-media {
+  position: relative;
+  display: block;
+  height: 100%;
+}
+
+.bh-mini-thumb {
+  display: block;
+  width: 66px;
+  height: 66px;
+  flex: 0 0 66px;
+}
+
+.bh-mini-thumb .bh-thumb {
+  width: 100%;
+  height: 100%;
 }
 
 .bhome-featured .bh-pill {
