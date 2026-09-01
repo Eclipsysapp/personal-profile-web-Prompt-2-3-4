@@ -15,20 +15,20 @@ const geistMono = Geist_Mono({
 });
 
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://anilbhimani.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
 
   title: {
-    default: "Professional Profile | Secure Digital Portfolio",
-    template: "%s | Professional Profile",
+    default: "Anil Bhimani — Writing, Work & Ideas",
+    template: "%s | Anil Bhimani",
   },
 
   description:
-    "A secure professional profile and digital portfolio with controlled visitor access.",
+    "The personal site of Anil Bhimani — writing on technology, building and business, with a protected professional profile for verified visitors.",
 
-  applicationName: "Professional Profile",
+  applicationName: "Anil Bhimani",
 
   alternates: {
     canonical: "/",
@@ -37,17 +37,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "/",
-    title: "Professional Profile | Secure Digital Portfolio",
+    title: "Anil Bhimani — Writing, Work & Ideas",
     description:
-      "A secure professional profile and digital portfolio with controlled visitor access.",
-    siteName: "Professional Profile",
+      "Writing on technology, building and business, with a protected professional profile for verified visitors.",
+    siteName: "Anil Bhimani",
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "Professional Profile | Secure Digital Portfolio",
+    title: "Anil Bhimani — Writing, Work & Ideas",
     description:
-      "A secure professional profile and digital portfolio with controlled visitor access.",
+      "Writing on technology, building and business, with a protected professional profile for verified visitors.",
   },
 
   robots: {
