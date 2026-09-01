@@ -1,5 +1,5 @@
 ﻿import type { Metadata } from "next";
-import AdminBlogsClient from "./AdminBlogsClient";
+import AdminBlogsClient from "./AdminBlogsShell";
 
 export const metadata: Metadata = {
   title: "Blogs | Admin",
@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminBlogsPage() {
-  return <AdminBlogsClient />;
+  return <AdminBlogsClient view="manager" />;
 }

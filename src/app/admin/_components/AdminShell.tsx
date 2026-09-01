@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import AdminSidebar from "./AdminSidebar";
 import AdminHeader from "./AdminHeader";
 import { useAdminTheme } from "./useAdminTheme";
 import "../admin.css";
+import { useAdminAuth } from "./AdminAuthProvider";
 
 type AdminShellProps = {
   title: string;
@@ -20,6 +22,8 @@ export default function AdminShell({
   children,
 }: AdminShellProps) {
   const { theme, toggle, mounted } = useAdminTheme();
+  const { admin, checking, signOut } = useAdminAuth();
+  const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   // While the mobile drawer is open, lock background scrolling and allow
@@ -43,6 +47,10 @@ export default function AdminShell({
     };
   }, [drawerOpen]);
 
+  useEffect(()=>{if(!checking&&!admin)router.replace("/admin/login")},[admin,checking,router]);
+
+  if(checking||!admin)return <div className="adx adx-auth-check"><span className="adx-spinner"/><p>Verifying admin session…</p></div>;
+
   return (
     <div className={`adx${drawerOpen ? " is-drawer-open" : ""}`}>
       <div className="adx-shell">
@@ -55,6 +63,8 @@ export default function AdminShell({
         <AdminSidebar
           activeHref={activeHref}
           onNavigate={() => setDrawerOpen(false)}
+          admin={admin}
+          onLogout={()=>void signOut().finally(()=>router.replace("/admin/login"))}
         />
 
         <div className="adx-main">
@@ -65,6 +75,7 @@ export default function AdminShell({
             themeReady={mounted}
             onToggleTheme={toggle}
             onOpenMenu={() => setDrawerOpen(true)}
+            admin={admin}
           />
           <main className="adx-content">{children}</main>
         </div>

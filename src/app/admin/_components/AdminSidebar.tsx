@@ -1,19 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { adminIdentity } from "../_data/demo";
+import type { AdminIdentity } from "@/lib/admin-api";
 import { navItems } from "./nav";
 import { CloseIcon, LogoutIcon } from "./icons";
 
 type AdminSidebarProps = {
   activeHref: string;
   onNavigate: () => void;
+  admin: AdminIdentity;
+  onLogout:()=>void;
 };
 
 export default function AdminSidebar({
   activeHref,
   onNavigate,
+  admin,onLogout,
 }: AdminSidebarProps) {
+  const initials=admin.name.split(/\s+/).map(part=>part[0]).join("").slice(0,2).toUpperCase();
   return (
     <aside className="adx-sidebar" aria-label="Admin navigation">
       <button
@@ -27,7 +31,7 @@ export default function AdminSidebar({
 
       <div className="adx-sidebar-brand">
         <span className="adx-brand-mark" aria-hidden>
-          {adminIdentity.initials}
+          AB
         </span>
         <span className="adx-brand-copy">
           <strong>Anil Bhimani</strong>
@@ -64,17 +68,17 @@ export default function AdminSidebar({
       <div className="adx-sidebar-foot">
         <div className="adx-identity">
           <span className="adx-avatar" aria-hidden>
-            {adminIdentity.initials}
+            {initials}
           </span>
           <span className="adx-identity-copy">
-            <strong>{adminIdentity.role}</strong>
-            <span>{adminIdentity.email}</span>
+            <strong>{admin.name}</strong>
+            <span>{admin.email}</span>
           </span>
         </div>
-        <Link href="/admin/login" className="adx-logout">
+        <button type="button" onClick={onLogout} className="adx-logout">
           <LogoutIcon />
           <span>Logout</span>
-        </Link>
+        </button>
       </div>
     </aside>
   );

@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import ArticleBlockBuilder, {
   ArticleBlock,
   emptyBlock,
@@ -150,7 +151,8 @@ function inputDateTime(value?: string | null) {
   return local.toISOString().slice(0, 16);
 }
 
-export default function AdminBlogsClient() {
+export default function AdminBlogsClient({ view = "editor" }: { view?: "manager" | "editor" }) {
+  const router = useRouter();
   const [adminToken, setAdminToken] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] =
@@ -522,6 +524,18 @@ export default function AdminBlogsClient() {
       behavior: "smooth",
     });
   }
+
+  useEffect(() => {
+    if (view !== "editor" || !blogs.length || editingId) return;
+    const requestedId = Number(sessionStorage.getItem("admin_blog_edit_id"));
+    if (!requestedId) return;
+    const requestedBlog = blogs.find((blog) => blog.id === requestedId);
+    if (requestedBlog) {
+      sessionStorage.removeItem("admin_blog_edit_id");
+      const timer = window.setTimeout(() => startEdit(requestedBlog), 0);
+      return () => window.clearTimeout(timer);
+    }
+  }, [blogs, editingId, view]);
 
   async function handleImageSelect(
     event: ChangeEvent<HTMLInputElement>
@@ -939,7 +953,7 @@ if (!imageUrl) {
   }
 
   return (
-    <main className="admin-blog-shell min-h-screen bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50">
+    <main className={`admin-blog-shell admin-blog-view-${view} min-h-screen bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-50`}>
       <header className="admin-blog-header border-b border-zinc-200 bg-white/90 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90">
         <div className="admin-blog-header-inner mx-auto flex max-w-7xl items-center justify-between px-5 py-5">
           <div className="admin-brand">
@@ -1642,9 +1656,10 @@ if (!imageUrl) {
                     ) : null}
                     <button
                       type="button"
-                      onClick={() =>
-                        startEdit(blog)
-                      }
+                      onClick={() => {
+                        sessionStorage.setItem("admin_blog_edit_id", String(blog.id));
+                        router.push("/admin/blogs/new");
+                      }}
                       className="text-sm font-medium underline-offset-4 hover:underline"
                     >
                       Edit

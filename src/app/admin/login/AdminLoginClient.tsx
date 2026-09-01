@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useAdminAuth } from "../_components/AdminAuthProvider";
+import { AdminApiError } from "@/lib/admin-api";
 import { useAdminTheme } from "../_components/useAdminTheme";
 import {
   EyeIcon,
@@ -29,6 +32,8 @@ function isValidEmail(value: string) {
 
 export default function AdminLoginClient() {
   const { theme, toggle, mounted } = useAdminTheme();
+  const { admin, checking, signIn } = useAdminAuth();
+  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,7 +42,9 @@ export default function AdminLoginClient() {
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => { if (!checking && admin) router.replace("/admin"); }, [admin, checking, router]);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     // Front-end validation only. Real credential verification will be
@@ -63,12 +70,15 @@ export default function AdminLoginClient() {
     // Simulate the request lifecycle so the UI states are visible.
     // No authentication is performed and no credentials are persisted.
     setSubmitting(true);
-    window.setTimeout(() => {
+    try {
+      await signIn(email.trim().toLowerCase(), password);
+      setPassword("");
+      router.replace("/admin");
+    } catch (error) {
+      setFormError(error instanceof AdminApiError ? error.message : "Unable to sign in. Please try again.");
+    } finally {
       setSubmitting(false);
-      setFormError(
-        "Authentication is not connected yet. Wire this form to the Laravel admin login endpoint to sign in.",
-      );
-    }, 1100);
+    }
   }
 
   return (
@@ -204,16 +214,6 @@ export default function AdminLoginClient() {
                 {errors.password ? (
                   <p className="adx-field-error">{errors.password}</p>
                 ) : null}
-              </div>
-
-              <div className="adx-form-row">
-                <label className="adx-check">
-                  <input type="checkbox" />
-                  Keep me signed in
-                </label>
-                <a href="/admin/login" className="adx-forgot">
-                  Forgot password?
-                </a>
               </div>
 
               <button

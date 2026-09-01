@@ -23,13 +23,12 @@ export type NavItem = {
 export const navItems: NavItem[] = [
   { label: "Dashboard", href: "/admin", icon: DashboardIcon },
   { label: "Blogs", href: "/admin/blogs", icon: BlogsIcon },
-  { label: "Comments", href: "/admin#comments", icon: CommentsIcon, badge: "17" },
+  { label: "Comments", href: "/admin/comments", icon: CommentsIcon },
   {
     label: "Access Requests",
-    href: "/admin#access",
+    href: "/admin/access-requests",
     icon: AccessIcon,
-    badge: "6",
   },
-  { label: "Visitors", href: "/admin#visitors", icon: VisitorsIcon },
-  { label: "Security & Audit", href: "/admin#security", icon: SecurityIcon },
+  { label: "Visitors", href: "/admin/visitors", icon: VisitorsIcon },
+  { label: "Security & Audit", href: "/admin/security", icon: SecurityIcon },
 ];

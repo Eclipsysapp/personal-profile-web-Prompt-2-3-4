@@ -1,6 +1,6 @@
 "use client";
 
-import { adminIdentity } from "../_data/demo";
+import type { AdminIdentity } from "@/lib/admin-api";
 import {
   BellIcon,
   MenuIcon,
@@ -16,6 +16,7 @@ type AdminHeaderProps = {
   themeReady: boolean;
   onToggleTheme: () => void;
   onOpenMenu: () => void;
+  admin:AdminIdentity;
 };
 
 export default function AdminHeader({
@@ -25,6 +26,7 @@ export default function AdminHeader({
   themeReady,
   onToggleTheme,
   onOpenMenu,
+  admin,
 }: AdminHeaderProps) {
   return (
     <header className="adx-header">
@@ -76,9 +78,9 @@ export default function AdminHeader({
 
         <button type="button" className="adx-header-avatar">
           <span className="adx-avatar" aria-hidden>
-            {adminIdentity.initials}
+            {admin.name.split(/\s+/).map(part=>part[0]).join("").slice(0,2).toUpperCase()}
           </span>
-          <span>{adminIdentity.role}</span>
+          <span>{admin.name}</span>
         </button>
       </div>
     </header>

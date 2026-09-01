@@ -1,4 +1,4 @@
-import type { DashboardStat } from "../_data/demo";
+export type DashboardStat = { key:string; label:string; value:string; hint:string; trend:"up"|"down"|"flat"; delta:string; icon:"blogs"|"published"|"pending"|"comments"|"access"|"visitors" };
 import {
   AccessIcon,
   BlogsIcon,

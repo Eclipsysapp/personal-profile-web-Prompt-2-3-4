@@ -1,0 +1,3 @@
+"use client";
+import Link from"next/link";import AdminShell from"../_components/AdminShell";import AdminBlogsClient from"./AdminBlogsClient";
+export default function AdminBlogsShell({view="manager"}:{view?:"manager"|"editor"}){return <AdminShell title={view==="manager"?"Blogs":"Article Editor"} subtitle="Create, edit, publish and moderate articles." activeHref="/admin/blogs">{view==="manager"?<div className="admin-blogs-v0-heading"><div><h2>Blog Manager</h2><p>Review and manage real articles and community submissions.</p></div><Link href="/admin/blogs/new">+ Create New Article</Link></div>:null}<AdminBlogsClient view={view}/></AdminShell>}
