@@ -91,6 +91,9 @@ export function BlogFooter({ site }: BlogFooterProps) {
           <Link href="/#about">About</Link>
           <Link href="/blog">Articles</Link>
           <Link href="/#contact">Contact</Link>
+          <Link href="/privacy-policy">Privacy Policy</Link>
+          <Link href="/terms-of-service">Terms of Service</Link>
+          <Link href="/data-deletion">Data Deletion</Link>
         </nav>
 
         <div className="geeky-socials geeky-footer-socials" aria-label="Social links">
