@@ -1,0 +1,536 @@
+/* =========================================================
+   Article submission — an editorial "writing studio".
+   Scoped under .wstudio so it never disturbs .community-*,
+   .bhome-* or the rest of the app. Shares the Geeky
+   single-post visual language and dark-mode system.
+   ========================================================= */
+
+.wstudio {
+  --ws-primary: #2ba283;
+  --ws-primary-dark: #20876d;
+  --ws-fg: #141414;
+  --ws-text: #555;
+  --ws-muted: #8a8a8a;
+  --ws-border: #e4e4e4;
+  --ws-card: #fff;
+  --ws-soft: #eff5f3;
+  --ws-bg: #fafafa;
+
+  width: min(calc(100% - 40px), 1240px);
+  margin-inline: auto;
+  padding: 26px 0 80px;
+}
+
+.geeky-dark .wstudio {
+  --ws-fg: #ededed;
+  --ws-text: #b6b6b6;
+  --ws-muted: #8a8a8a;
+  --ws-border: #333;
+  --ws-card: #171717;
+  --ws-soft: #1c2623;
+  --ws-bg: #101010;
+}
+
+.wstudio * {
+  box-sizing: border-box;
+}
+
+.ws-kicker {
+  margin: 0;
+  color: var(--ws-primary);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* ---------- top bar ---------- */
+.wstudio-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 20px;
+  margin-bottom: 26px;
+  border-bottom: 1px solid var(--ws-border);
+}
+
+.wstudio-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ws-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wstudio-back::before {
+  content: "\2190";
+  font-size: 15px;
+}
+
+.wstudio-back:hover {
+  color: var(--ws-primary);
+}
+
+.wstudio-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wstudio-identity-copy {
+  text-align: right;
+  line-height: 1.3;
+}
+
+.wstudio-identity-copy small {
+  display: block;
+  color: var(--ws-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wstudio-identity-copy strong {
+  color: var(--ws-fg);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.wstudio-signout {
+  border: 1px solid var(--ws-border);
+  border-radius: 999px;
+  background: transparent;
+  padding: 8px 14px;
+  color: var(--ws-text);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.16s ease, color 0.16s ease;
+}
+
+.wstudio-signout:hover {
+  border-color: var(--ws-primary);
+  color: var(--ws-primary);
+}
+
+/* ---------- layout ---------- */
+.wstudio-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 36px;
+  align-items: start;
+}
+
+.wstudio-main {
+  min-width: 0;
+  display: grid;
+  gap: 22px;
+}
+
+/* ---------- writing surface ---------- */
+.wstudio-surface {
+  border: 1px solid var(--ws-border);
+  border-radius: 12px;
+  background: var(--ws-card);
+  padding: clamp(20px, 3vw, 38px);
+}
+
+.wstudio-title-input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--ws-fg);
+  font-size: clamp(26px, 3.4vw, 40px);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.8px;
+  padding: 0;
+  resize: none;
+}
+
+.wstudio-title-input::placeholder {
+  color: var(--ws-muted);
+  opacity: 0.6;
+}
+
+.wstudio-title-input:focus {
+  outline: none;
+}
+
+.wstudio-excerpt-input {
+  width: 100%;
+  margin-top: 16px;
+  border: 0;
+  border-top: 1px solid var(--ws-border);
+  padding-top: 16px;
+  background: transparent;
+  color: var(--ws-text);
+  font-size: 16px;
+  line-height: 1.7;
+  resize: vertical;
+}
+
+.wstudio-excerpt-input::placeholder {
+  color: var(--ws-muted);
+}
+
+.wstudio-excerpt-input:focus {
+  outline: none;
+}
+
+.wstudio-card {
+  border: 1px solid var(--ws-border);
+  border-radius: 12px;
+  background: var(--ws-card);
+  padding: clamp(18px, 2.4vw, 26px);
+}
+
+.wstudio-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.wstudio-card-head h2 {
+  margin: 0;
+  color: var(--ws-fg);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+.wstudio-card-head span {
+  color: var(--ws-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ---------- publishing panel ---------- */
+.wstudio-panel {
+  display: grid;
+  gap: 18px;
+  position: sticky;
+  top: 88px;
+}
+
+.ws-stack {
+  display: grid;
+  gap: 14px;
+}
+
+.ws-field {
+  display: grid;
+  gap: 7px;
+}
+
+.ws-field > span {
+  color: var(--ws-fg);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.ws-field small {
+  color: var(--ws-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ws-field input,
+.ws-field select,
+.ws-field textarea {
+  width: 100%;
+  border: 1px solid var(--ws-border);
+  border-radius: 8px;
+  background: var(--ws-bg);
+  padding: 10px 12px;
+  color: var(--ws-fg);
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.ws-field textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.ws-field input:focus,
+.ws-field select:focus,
+.ws-field textarea:focus {
+  outline: none;
+  border-color: var(--ws-primary);
+  box-shadow: 0 0 0 3px rgba(43, 162, 131, 0.16);
+}
+
+.ws-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* featured image */
+.ws-featured {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--ws-border);
+  aspect-ratio: 16 / 9;
+  background: var(--ws-soft);
+}
+
+.ws-featured img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ws-featured button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.62);
+  padding: 6px 12px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ws-featured button:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.ws-upload {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px dashed var(--ws-border);
+  border-radius: 8px;
+  padding: 16px;
+  color: var(--ws-primary-dark);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.16s ease, background 0.16s ease;
+}
+
+.ws-upload:hover {
+  border-color: var(--ws-primary);
+  background: var(--ws-soft);
+}
+
+.ws-upload input {
+  display: none;
+}
+
+.geeky-dark .ws-upload {
+  color: #6fd4b8;
+}
+
+/* submit */
+.wstudio-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.ws-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid var(--ws-primary);
+  transition: background 0.16s ease, color 0.16s ease, opacity 0.16s ease;
+}
+
+.ws-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ws-btn-primary {
+  background: var(--ws-primary);
+  color: #fff;
+}
+
+.ws-btn-primary:hover:not(:disabled) {
+  background: var(--ws-primary-dark);
+  border-color: var(--ws-primary-dark);
+}
+
+.ws-btn-ghost {
+  background: transparent;
+  color: var(--ws-primary);
+}
+
+.ws-btn-ghost:hover:not(:disabled) {
+  background: var(--ws-soft);
+}
+
+.ws-notice {
+  border-radius: 8px;
+  background: var(--ws-soft);
+  padding: 12px 14px;
+  color: var(--ws-text);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.ws-alert {
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.ws-alert-error {
+  background: #fdecea;
+  color: #a12414;
+  border: 1px solid #f4c7c0;
+}
+
+.ws-alert-success {
+  background: #e7f6f0;
+  color: #1c7357;
+  border: 1px solid #bfe6d7;
+}
+
+.geeky-dark .ws-alert-error {
+  background: #2a1512;
+  color: #f0a99e;
+  border-color: #5a2a22;
+}
+
+.geeky-dark .ws-alert-success {
+  background: #10251d;
+  color: #7fd6b8;
+  border-color: #24473a;
+}
+
+/* ---------- signed-out gate ---------- */
+.wstudio-gate {
+  width: min(calc(100% - 40px), 560px);
+  margin: clamp(40px, 8vw, 90px) auto;
+  border: 1px solid var(--ws-border);
+  border-radius: 14px;
+  background: var(--ws-card);
+  padding: clamp(28px, 5vw, 46px);
+  text-align: center;
+}
+
+.wstudio-gate h1 {
+  margin: 10px 0 8px;
+  color: var(--ws-fg);
+  font-size: clamp(24px, 3.4vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.6px;
+}
+
+.wstudio-gate > p {
+  margin: 0 auto;
+  max-width: 42ch;
+  color: var(--ws-text);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.wstudio-gate-providers {
+  display: grid;
+  gap: 10px;
+  margin-top: 26px;
+  text-align: left;
+}
+
+.wstudio-gate-providers a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  border: 1px solid var(--ws-border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  color: var(--ws-fg);
+  font-size: 14px;
+  font-weight: 700;
+  transition: border-color 0.16s ease, background 0.16s ease;
+}
+
+.wstudio-gate-providers a:hover {
+  border-color: var(--ws-primary);
+  background: var(--ws-soft);
+}
+
+.wstudio-gate-providers b {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ws-soft);
+  color: var(--ws-primary);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.wstudio-gate-alt {
+  margin-top: 18px;
+  color: var(--ws-muted);
+  font-size: 12px;
+}
+
+.wstudio-gate-alt a {
+  color: var(--ws-primary);
+  font-weight: 800;
+}
+
+.wstudio-loading {
+  display: grid;
+  place-items: center;
+  min-height: 40vh;
+  color: var(--ws-muted);
+  font-size: 14px;
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 980px) {
+  .wstudio-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .wstudio-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 767px) {
+  .wstudio {
+    width: min(calc(100% - 28px), 1240px);
+  }
+
+  .wstudio-identity-copy {
+    text-align: left;
+  }
+}
+
+@media (max-width: 420px) {
+  .ws-two {
+    grid-template-columns: 1fr;
+  }
+}
