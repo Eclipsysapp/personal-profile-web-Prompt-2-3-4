@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import AdminSidebar from "./AdminSidebar";
 import AdminHeader from "./AdminHeader";
 import { useAdminTheme } from "./useAdminTheme";
@@ -21,6 +21,27 @@ export default function AdminShell({
 }: AdminShellProps) {
   const { theme, toggle, mounted } = useAdminTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // While the mobile drawer is open, lock background scrolling and allow
+  // Escape to close it. Body scroll is restored on close/unmount. This is
+  // purely presentational and touches no auth or business logic.
+  useEffect(() => {
+    if (!drawerOpen) return;
+
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+    body.style.overflow = "hidden";
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setDrawerOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [drawerOpen]);
 
   return (
     <div className={`adx${drawerOpen ? " is-drawer-open" : ""}`}>

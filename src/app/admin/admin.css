@@ -899,7 +899,9 @@
 /* ============================================================
    RESPONSIVE
    ============================================================ */
-@media (max-width: 1240px) {
+/* Large desktop keeps all 6 cards in a single row (base rule).
+   Medium desktop / large tablet: 3 across so cards never squeeze. */
+@media (max-width: 1320px) {
   .adx-stats {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -912,6 +914,13 @@
   }
   .adx-search {
     width: 200px;
+  }
+}
+
+/* Small tablet: 2 across. */
+@media (max-width: 820px) {
+  .adx-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
